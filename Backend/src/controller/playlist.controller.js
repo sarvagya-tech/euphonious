@@ -122,5 +122,28 @@ const deleteSong = asynchandler(async(req,res)=>{
     )
 })
 
+const deletePlaylist = asynchandler(async(req,res)=>{
+const {playlistId} = req.params;
+if(!playlistId){
+    throw new ApiError(400,"playlistId is required");
 
-export {createPlaylist,getPlaylist,addSongs,deleteSong};
+}
+
+const playlist = await Playlist.findById(playlistId);
+if(!playlist){
+    throw new ApiError(404, "playlist not found");
+}
+
+if(playlist.user.toString()!== req.user._id.toString())
+{
+    throw new ApiError(403, "you are not authorized to delete this playlist");
+}
+await Playlist.findByIdAndDelete(playlistId);
+
+res.status(200).json(
+    new ApiResponse(200,null,"deleted successfully")
+)
+})
+
+
+export {createPlaylist,getPlaylist,addSongs,deleteSong,deletePlaylist};

@@ -20,7 +20,14 @@ const initializeSocket = (io)=>{
 
         })
 
-        socket.on('sendMessage',(data)=>{
+        socket.on('sendMessage',async(data)=>{
+
+            
+               const message = await Message.create({
+              room: data.roomId,
+              sender: data.userId,
+              message: data.message
+            })
             io.to(data.roomCode).emit('newMessage',{
               userId : data.userId,
               message : data.message,

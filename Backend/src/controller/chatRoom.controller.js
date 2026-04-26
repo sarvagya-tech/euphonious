@@ -110,4 +110,100 @@ res.status(200).json(
 )
 }
 )
-export{createchatRoom};
+const leaveRoom = asynchandler(async(req,res)=>{
+
+    /*
+    roomid,userid
+    find room
+    pull thr user id from members
+    */
+   const {roomId} = req.params;
+   if(!roomId){
+    throw new ApiError(400,"roomId required")
+   }
+   const userId = req.user._id;
+   const room = await Room.findById(roomId);
+   if(!room){
+    throw new ApiError(404,"user not found")
+   }
+if(room.hostedBy.toString() === userId.toString()){
+    if(room.members.length === 0){
+        // host is only member → delete room
+        await Room.findByIdAndDelete(roomId)
+        return res.status(200).json(
+            new ApiResponse(200, null, "room deleted")
+        )
+    }
+    // transfer host to first member
+    room.hostedBy = room.members[0]
+    await room.save()
+}
+// then remove host from members using $pull
+   const updatedRoom = await Room.findByIdAndUpdate(
+    roomId,{
+        $pull :{
+            members : userId
+        }
+    },{
+        new : true
+    })
+    if(!updatedRoom){
+        throw new ApiError(404,"something went wrong while leaving")
+    }
+    res.status(200).json(
+        new ApiResponse(200,updatedRoom,"user successfully leaved the room")
+    )
+
+})
+ const deleteRoom = asynchandler(async(req,res)=>{
+
+    const {roomId} = req.params;
+    if(!roomId){
+        throw new ApiError(400,"roomId is required")
+
+    }
+    const userId = req.user._id;
+
+    const room = await Room.findById(roomId);
+    if(!room){
+        throw new ApiError(404,"room is not found")
+    }
+    if(room.hostedBy.toString()!== userId.toString()){
+        throw new ApiError(403, "only host can delete the room")
+    }
+
+    const deletedRoom = await Room.findByIdAndDelete(roomId);
+    if(!deleteRoom){
+
+         throw new ApiError(500, "something went wrong while deleting room");
+
+    }
+
+    res.status(200).json(
+        new ApiResponse(200,null,"room is deleted successfully")
+    )
+
+ })
+
+ const getcurrentRoom = asynchandler(async(req,res)=>{
+
+    const {roomId} = req.params;
+    if(!roomId){
+        throw new ApiError(400,"roomId is required");
+    }
+
+    const roomData = await Room.findById(roomId)
+        .populate('members', 'fullname avatar')
+        .populate('hostedBy', 'fullname avatar')
+        .populate('currentSong', 'title audio coverimage')
+        .populate('songQueue', 'title audio coverimage')
+
+    if(!roomData){
+        throw new ApiError(404,"room does not exist");
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, roomData, "room data fetched")
+    )
+})
+export{createchatRoom,joiningRoom,leaveRoom,deleteRoom,getcurrentRoom};

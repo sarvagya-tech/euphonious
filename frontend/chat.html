@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-primary": "#00363d",
+                "secondary-fixed": "#59feac",
+                "on-secondary-fixed": "#002111",
+                "on-surface": "#e5e2e3",
+                "inverse-primary": "#006875",
+                "on-primary-container": "#00626e",
+                "on-error-container": "#ffdad6",
+                "on-secondary-fixed-variant": "#005230",
+                "surface": "#131314",
+                "primary-container": "#00e5ff",
+                "secondary": "#43ed9c",
+                "tertiary": "#f2e9ff",
+                "inverse-surface": "#e5e2e3",
+                "surface-tint": "#00daf3",
+                "outline-variant": "#3b494c",
+                "on-error": "#690005",
+                "surface-container-highest": "#353436",
+                "on-primary-fixed": "#001f24",
+                "primary-fixed-dim": "#00daf3",
+                "surface-container": "#201f20",
+                "secondary-fixed-dim": "#31e192",
+                "error-container": "#93000a",
+                "surface-container-lowest": "#0e0e0f",
+                "outline": "#849396",
+                "on-surface-variant": "#bac9cc",
+                "error": "#ffb4ab",
+                "on-primary-fixed-variant": "#004f58",
+                "on-tertiary": "#3c0090",
+                "surface-container-high": "#2a2a2b",
+                "surface-bright": "#3a393a",
+                "on-background": "#e5e2e3",
+                "on-secondary": "#003920",
+                "background": "#131314",
+                "surface-variant": "#353436",
+                "tertiary-fixed-dim": "#d1bcff",
+                "primary": "#c3f5ff",
+                "on-secondary-container": "#005231",
+                "inverse-on-surface": "#313031",
+                "on-tertiary-fixed-variant": "#5700c9",
+                "primary-fixed": "#9cf0ff",
+                "tertiary-fixed": "#e9ddff",
+                "secondary-container": "#01d083",
+                "on-tertiary-container": "#6c00f7",
+                "on-tertiary-fixed": "#23005b",
+                "surface-container-low": "#1c1b1c",
+                "surface-dim": "#131314",
+                "tertiary-container": "#d9c8ff"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "gutter": "24px",
+                "container-margin": "32px",
+                "sidebar-width": "280px",
+                "player-height": "96px",
+                "unit": "8px"
+            },
+            "fontFamily": {
+                "headline-lg": ["Epilogue"],
+                "body-lg": ["Manrope"],
+                "label-sm": ["Manrope"],
+                "headline-xl": ["Epilogue"],
+                "headline-md": ["Epilogue"],
+                "body-md": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #050505; color: #e5e2e3; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            width: 24px;
+            height: 24px;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.2); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0, 229, 255, 0.4); }
+    </style>
+</head>
+<body class="font-body-md text-on-surface antialiased overflow-hidden">
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-full flex flex-col py-8 bg-[#121214] h-screen w-64 border-r border-white/5 shadow-2xl font-['Epilogue'] antialiased tracking-tight z-50">
+<div class="px-6 mb-10">
+<h1 class="text-xl font-bold text-white tracking-widest uppercase mb-1">Sonic Noir</h1>
+<p class="text-[10px] text-gray-500 tracking-[0.2em] uppercase">Premium Lounge</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center px-6 py-3 text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-all duration-200 ease-out group" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="home">home</span>
+<span class="font-medium">Home</span>
+</a>
+<a class="flex items-center px-6 py-3 text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-all duration-200 ease-out group" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="explore">explore</span>
+<span class="font-medium">Explore</span>
+</a>
+<!-- Active Tab: Rooms -->
+<a class="flex items-center px-6 py-3 text-white border-l-4 border-[#00E5FF] bg-gradient-to-r from-[#00E5FF]/10 to-transparent transition-all duration-200 ease-out" href="#">
+<span class="material-symbols-outlined mr-4 text-[#00E5FF]" data-icon="forum">forum</span>
+<span class="font-medium">Rooms</span>
+</a>
+<a class="flex items-center px-6 py-3 text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-all duration-200 ease-out group" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="library_music">library_music</span>
+<span class="font-medium">Library</span>
+</a>
+<a class="flex items-center px-6 py-3 text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-all duration-200 ease-out group" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="settings">settings</span>
+<span class="font-medium">Settings</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full py-3 px-4 rounded-lg border-2 border-primary-container/30 text-primary-container font-semibold text-sm hover:bg-primary-container/10 hover:border-primary-container transition-all scale-[0.98] active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                New Session
+            </button>
+<div class="mt-8 flex items-center gap-3">
+<img alt="User profile" class="w-10 h-10 rounded-full border border-white/10 object-cover" data-alt="A close-up high-fashion portrait of a young man with a focused expression, softly lit by cool-toned ambient light reflecting the nocturnal music lounge aesthetic. The background is a blurred obsidian black with subtle cyan light leaks, maintaining a premium and sophisticated atmosphere consistent with a high-fidelity audio app user profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBvajbAuTC7T5NrwhrBtzUnB1U8ZonfaZdxia9ppXPZnP1-MFLYUK0e2L5ff4YlkPpPLKZDLEcMLlr3RX4j3Zk9u9h3jvYGnZaEUGS3fncSs5yDt7uSkxyYZlH4EpcAd6o5sZ0cjc-QOwo_uQFWkhORPmwhpRoSxK6eb91dviVqMnGtMfee4pMl7oxF8QhLELbUompGh--_q1GcqsTCBVZ30yY3GYyo9w7-4GY_Q1cxxcTkKeIKJPLuzVedpnI_BjzzrL7IMThlArf"/>
+<div>
+<p class="text-sm font-semibold text-white">Alex Volkov</p>
+<p class="text-[10px] text-[#00E5FF]">Audiophile Elite</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 flex flex-col h-screen bg-[#050505]">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-6 h-16 bg-[#050505]/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-40 font-['Epilogue'] font-medium">
+<div class="flex flex-col">
+<span class="text-lg font-semibold text-white leading-tight">Lounge Chat</span>
+<span class="text-[10px] text-[#00E5FF] tracking-widest uppercase">Midnight Chill Lounge</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden lg:block">
+<input class="bg-surface-container-low border border-white/10 rounded-full py-1.5 pl-10 pr-4 text-sm focus:outline-none focus:border-[#00E5FF]/50 w-64 transition-colors" placeholder="Search track or user..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm" data-icon="search">search</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-gray-400 hover:text-white transition-colors opacity-80 hover:opacity-100">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+</button>
+<button class="text-gray-400 hover:text-white transition-colors opacity-80 hover:opacity-100">
+<span class="material-symbols-outlined" data-icon="info">info</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Room Header / Members -->
+<section class="px-gutter pt-8 pb-4 flex items-end justify-between">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-white mb-2">Midnight Chill Lounge</h2>
+<p class="font-body-md text-on-surface-variant max-w-xl">A place to relax and share deep beats. Late night frequencies only.</p>
+</div>
+<div class="flex items-center -space-x-3 mb-1">
+<img class="w-10 h-10 rounded-full border-2 border-surface object-cover" data-alt="A portrait of a woman with a serene expression, bathed in soft neon cyan lighting that complements the dark nocturnal lounge aesthetic. The style is high-contrast and minimalist, evoking a sense of premium membership in an exclusive digital music community." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvWnwQRyTdFvU_3rI-yYmvtTEOH6u6IYFUz7ucj5on3F5Vzlok3V-AxcU_WvDDFmt67HqNf1swZNdzDvNr_izxkBKm3m4B-8G9oCg7nR18I3K6Ld5e627Xn-H2z6gZsnl1M0m1GCLXMzjJY1TBcXfY3xdCyMiC_bqjfTg79eEaSXoLjqCGqBrf-1Ijbf0UEFWaaCc-aAN3YY58c9swNw4GCXHg163zr_rcicMgcD52Qd4NftLbFaHUEayMVA7KfY_YA8psn4krwFyQ"/>
+<img class="w-10 h-10 rounded-full border-2 border-surface object-cover" data-alt="A professional headshot of a creative professional in a dark studio setting, with subtle rim lighting in neon green shades. The image maintains the sophisticated, rhythmic, and nocturnal mood of the Sonic Noir brand, featuring deep shadows and sharp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSbcpoZYPgNUYespPkJpLTlced_mAV1_gjYKChclQc4yV4xZpAUKf6GuiBlAha-FX0VAGnpRYX8TapaOeqAkGw73HX7w_NBLQWWrKxt6iQ0JxCF7xNQmIRURFEZtf_QcfIq2KLfBX7iHQ3zmsSh0AIKwOdPhpnQg3g0zE5NTfERpihZdspN4FCWohJKfFikBk6z9XN06Gi7pJ5KewD9yIJYxhgt0BRB1p7710vC_o9W8wkhgYdXf9BmfvbulZYMNUzHNOlX9KkDjLu"/>
+<img class="w-10 h-10 rounded-full border-2 border-surface object-cover" data-alt="A young man looking thoughtfully away from the camera, illuminated by low-key, atmospheric lighting with blue and teal highlights. The setting suggests a premium music lounge environment, dark and immersive with a minimalist high-tech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkohT3zykBvSJL9Ko2JZfj5gvzKbozJfRPNq-GxuRlTgpk1vgXe-JNjcr_ueggMBw7-4Uj-wqZoVnX_aYRD2ddyRuFKcC-RYjXEliAGPLiEy3Sgg-z7LeaOFsmDFxt5filQpsgAJWLerBoWtgRqQoJ4sbF2tWDpqxFAsNJnjtqRqpvUGfwbyykw9cGeaAwmygWzk-6FF762TWI0fdIB6Lzwf_ckyIZmclrTHM8ip4UZGIoXmfSQ-qaFjgMwrINCuWl0JUwPJaLcHMN"/>
+<div class="w-10 h-10 rounded-full border-2 border-surface bg-surface-container-high flex items-center justify-center text-[10px] font-bold text-[#00E5FF]">
+                    +24
+                </div>
+</div>
+</section>
+<!-- Layout Grid: Chat + Queue -->
+<div class="flex-1 grid grid-cols-12 gap-gutter px-gutter pb-32 overflow-hidden">
+<!-- Chat Interface -->
+<div class="col-span-12 lg:col-span-8 flex flex-col bg-surface-container-low/30 rounded-xl border border-white/5 backdrop-blur-sm overflow-hidden">
+<div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+<!-- Message Other -->
+<div class="flex items-start gap-4">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="A stylish woman with headphones around her neck, lit by vibrant, low-key lighting in shades of purple and deep obsidian. The aesthetic is sophisticated and rhythmic, capturing the essence of a nocturnal music curator in a premium digital environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXvlo1nJqZkUX50VFgPnBLYw9UqpX3Q7ZeomNQAnb-2TgzcBGFc1RUVD4VNzjFbO3nVHvjc6-Gyt7eg7Kmt1DQq_1_7-5gppT7NzV7hr7rIk10awx00K-HLxZjN_3L_6rhdKJN16h3cea_pCn5ewpPGdNmSUfHgaYTyjZTeDy81UiJmRgBw4ueyd_QUNxEW1pgHcTrCH_ca0uMsRVpT24uePb9q4uoqwNKA1Qs97iObIxPt7E5yNKb-_W2pXR69xpu38R7ccMeeD_F"/>
+<div>
+<p class="text-[10px] font-bold text-gray-400 mb-1">Mina S. <span class="font-normal ml-2 opacity-50">22:04</span></p>
+<div class="bg-white/5 border border-white/5 rounded-2xl rounded-tl-none px-4 py-3 text-sm max-w-md text-on-surface">
+                                That last bassline from the Burial track was incredible. Who added it?
+                            </div>
+</div>
+</div>
+<!-- Message Me -->
+<div class="flex items-start gap-4 justify-end">
+<div class="text-right">
+<p class="text-[10px] font-bold text-[#00E5FF] mb-1">You <span class="font-normal ml-2 text-gray-500">22:05</span></p>
+<div class="bg-primary-container/10 border border-primary-container/20 rounded-2xl rounded-tr-none px-4 py-3 text-sm max-w-md text-white">
+                                Glad you liked it! It's from his latest EP. Pure nocturnal vibes.
+                            </div>
+</div>
+<img class="w-8 h-8 rounded-full object-cover" data-alt="User avatar close-up portrait with dark obsidian background and soft cyan lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvaoSDQBuq0OSwAJ38o9v6hVrlIAw7T_2GY58o3nJX8MZr_3zlObaKV9JHPSjBcESl5oBV34YcjiLiQ2-JjvDPLvmMzkIzXeOyvYJ95sEUt8vhQMZzIgE75_D1zjsVt1HF6IwvIZ9d9j_HTqiJ1Wt1HWYN0q_7zHIx_e3_kOQlV1Z3HbS02p2QB-dIrT6GnPC_GtUWzuXgpnuU_Bui8PDk-d1SAxSx1plso99at8ZaM63mZ9JmthvcZSX2JdN9R6AWFoqLWHKsOklE"/>
+</div>
+<!-- System Event -->
+<div class="flex justify-center">
+<span class="text-[10px] uppercase tracking-widest text-gray-600 bg-white/5 px-3 py-1 rounded-full border border-white/5">
+                            Marcus just added "Night City" to the queue
+                        </span>
+</div>
+<!-- Message Other -->
+<div class="flex items-start gap-4">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="A bearded man with a serene expression, illuminated by neon mint green rim light against a pitch-black background. The mood is calm and deep, perfectly fitting for an audiophile lounge chat participant." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3s95n0ZlmxYyVzfzrlawWZwJt7oDjSX_TYKfv15tF4FY55_IVRoTsTe0jI62JLWhoq8Rt9USbZg56rpvFlDqsZledmFNGt25OTPGnc1tIsRwBKpYEnUTCFo4IFdwvjDn4ti4v2dTiZzr1etECI2S84qd6ANNcO3zOsa4EVz7OkugiQPeEITZkm_nV0tuJWZTXkegL9gZ34RbN0DAOm5Cbk6kU3iFMtj_lM1YbhF4xtchaGVoMscNxw4fDbc6Q_1763fWzqFF1aWq-"/>
+<div>
+<p class="text-[10px] font-bold text-gray-400 mb-1">Marcus <span class="font-normal ml-2 opacity-50">22:07</span></p>
+<div class="bg-white/5 border border-white/5 rounded-2xl rounded-tl-none px-4 py-3 text-sm max-w-md text-on-surface">
+                                Adding some synth-wave textures to keep the flow going. Check this out.
+                            </div>
+</div>
+</div>
+<!-- Message Me -->
+<div class="flex items-start gap-4 justify-end">
+<div class="text-right">
+<p class="text-[10px] font-bold text-[#00E5FF] mb-1">You <span class="font-normal ml-2 text-gray-500">22:08</span></p>
+<div class="bg-primary-container/10 border border-primary-container/20 rounded-2xl rounded-tr-none px-4 py-3 text-sm max-w-md text-white">
+                                Perfect transition.
+                            </div>
+</div>
+<img class="w-8 h-8 rounded-full object-cover" data-alt="User avatar close-up portrait with dark obsidian background and soft cyan lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAk6EUarC2LHSMxkzQt__fnilOXXLe_G9sTGD6-RzqWOH6NrqkWTNYA7GeKYPEya9BashHd_o3G3EZHbh1y9KUx6ilS-k3zyztCjDGBw2DgYzYZSIJfXT13NTWfbqlzmyhbfRA2G6xAt-XeJtIkUSnBGN6rnD4tWMoxODeMDMN2uJWwH5Bc8XS_NUuM-ZEMg063JbLUU3B7kD06O36kEfVywbSboTHrwkbBieqpqlZG-_OVrs9afWzjRoSfTT6hfzXSK6sikrJpFayB"/>
+</div>
+</div>
+<!-- Chat Input -->
+<div class="p-6 bg-surface-container-low border-t border-white/5">
+<div class="relative flex items-center">
+<input class="w-full bg-[#050505] border border-white/10 rounded-xl py-4 pl-6 pr-16 text-sm text-white focus:outline-none focus:border-primary-container/50 transition-all placeholder:text-gray-600" placeholder="Type here..." type="text"/>
+<div class="absolute right-4 flex items-center gap-2">
+<button class="p-2 text-gray-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined" data-icon="mood">mood</span>
+</button>
+<button class="p-2 bg-primary-container text-on-primary rounded-lg flex items-center justify-center active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Side Panel: Shared Queue -->
+<div class="hidden lg:block lg:col-span-4 space-y-6">
+<div class="bg-[#121214] rounded-xl border border-white/5 p-6 h-full flex flex-col">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-sm font-bold text-white tracking-widest uppercase">Shared Queue</h3>
+<span class="text-[10px] text-primary-container font-semibold">12 Tracks</span>
+</div>
+<div class="space-y-1 flex-1 overflow-y-auto custom-scrollbar pr-2">
+<!-- Queue Item Active -->
+<div class="group flex items-center gap-4 p-3 rounded-lg bg-white/5 border border-[#00E5FF]/20 relative overflow-hidden">
+<div class="absolute left-0 top-0 w-1 h-full bg-[#00E5FF]"></div>
+<img class="w-10 h-10 rounded-md object-cover" data-alt="Abstract digital album art featuring deep indigo and neon cyan waves, pulsating like visual frequencies. The style is minimalist and high-fidelity, designed to glow against a dark charcoal background as a representation of ambient electronic music." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkVdYLICpJYFq6hYeNkAAKY54e3PBidC3Sq_tYGNs6rnV9sSl4jNNc49sKfw1Hyh3QHDvq6nlvK0fP5XGXzr4bVvY8OeHhqY7pgImrvlNHIG08gVkhG_FvLkaqySH_-3t7RQb4ClIUOlgQUzPWEaR_WsbrfhqLykk5yNQ6_sEpEfbtq3XSracwZACNl-WPoaIRoNXsUy51iqzGm6bnKvKLwIGjEIdi0Rb59GZM393W7hCILxFPGX1YzkHVt1W1sYuxGGScvIVosgc7"/>
+<div class="flex-1 overflow-hidden">
+<p class="text-xs font-bold text-white truncate">Untrue (2007)</p>
+<p class="text-[10px] text-gray-500 truncate">Burial</p>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary-container" data-icon="equalizer" style="font-variation-settings: 'FILL' 1;">equalizer</span>
+</div>
+</div>
+<!-- Queue Item -->
+<div class="group flex items-center gap-4 p-3 rounded-lg hover:bg-white/5 transition-all cursor-pointer">
+<img class="w-10 h-10 rounded-md object-cover opacity-60 group-hover:opacity-100 transition-opacity" data-alt="Album cover with grainy, minimalist photography of a foggy city street at night, illuminated by a single warm orange streetlamp. The mood is melancholic and cinematic, fitting for late-night listening lounge vibes with a dark obsidian color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrqUJNr4Q5H0Agm8Lldg5PVdoQpsWnI2trKFFb2h7xn7UpbfU9sN3oCBXE5uu_rZtFmMU5-FGbWxIdQjV2FZju2xAcqmfu4wKXWS2lsNUkvB_p1Nb51eqWb0f8ChySVSAjXZ2zqojMsnzrnI_G9DH55Gq0Y-6nhmgWOzr3phw4gxwAYovjTaGn1LkoA8rv5g09NF5aONsYnvPNdctZxtayWsA0IynwUYbFWEfiR5PZ2qFhvhk7JO1emaMmJZShJJ9qZwxgrohtV4C4"/>
+<div class="flex-1 overflow-hidden">
+<p class="text-xs font-bold text-gray-400 group-hover:text-white truncate">Night City</p>
+<p class="text-[10px] text-gray-600 group-hover:text-gray-400 truncate">Vantablack</p>
+</div>
+<span class="text-[10px] text-gray-600 group-hover:text-gray-400">3:42</span>
+</div>
+<!-- Queue Item -->
+<div class="group flex items-center gap-4 p-3 rounded-lg hover:bg-white/5 transition-all cursor-pointer">
+<img class="w-10 h-10 rounded-md object-cover opacity-60 group-hover:opacity-100 transition-opacity" data-alt="Digital art piece showing geometric obsidian shards reflecting neon green light. The background is a deep charcoal grey with high-contrast details, evoking a sense of rhythmic motion and high-fidelity sound quality in a minimalist style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV6JRI6IfbxKmoinodqdIYkgeePuKPzafDUOwZpySb163Y83ERp6ep7VLhlsqI8kFIg0RnfVxIxVWhNeGWOokiopNMnclQIiKG-GSNMz571ixUY9Nk7xs7gDjrQgsIm5b0gowolbhNJFeFYBhlgA1qHifzYzfor8_Dwr3cqTLacPjT0UgjN3ViJf2OfPJBnr9AYuKNBQNP11srmGJaYZh2W6tV9rN7CFRe6c2tV35kC40SZYIPStXynkv_5gKlROgc_lHOwduu841q"/>
+<div class="flex-1 overflow-hidden">
+<p class="text-xs font-bold text-gray-400 group-hover:text-white truncate">Echoes of Silence</p>
+<p class="text-[10px] text-gray-600 group-hover:text-gray-400 truncate">The Void</p>
+</div>
+<span class="text-[10px] text-gray-600 group-hover:text-gray-400">5:18</span>
+</div>
+<!-- Queue Item -->
+<div class="group flex items-center gap-4 p-3 rounded-lg hover:bg-white/5 transition-all cursor-pointer">
+<img class="w-10 h-10 rounded-md object-cover opacity-60 group-hover:opacity-100 transition-opacity" data-alt="Minimalist album art featuring a singular neon pink line cutting through a field of deep black and grey textures. The lighting is low-key and moody, focusing on the sophisticated nocturnal aesthetic of a premium music lounge interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXIJhEuHablPjGSEZqIEItIGtA74CkLmp_svDFeuD2wY2_N6AKmLJXRL5UrGrtjc8RBXDglwgTKRJwL9tIDllj0GJlMafGIApC5fF7fK8cXIlF5czzCZh2ZJ_ivWlk4qeoN3P6itqSQ_hKCPPGJiyxvIagRU4PTViLIKL8VTlocs0bI1TyFCg7kYLDQu18ZFuTwoRDbawCPgwpic3GPo_4uej_GcR8DAOr1JRDztzrkapad5cuCohsbUMNn0dbd00QAr-aC53BKOUn"/>
+<div class="flex-1 overflow-hidden">
+<p class="text-xs font-bold text-gray-400 group-hover:text-white truncate">Subsurface</p>
+<p class="text-[10px] text-gray-600 group-hover:text-gray-400 truncate">Deep Pulse</p>
+</div>
+<span class="text-[10px] text-gray-600 group-hover:text-gray-400">4:05</span>
+</div>
+</div>
+<button class="mt-6 w-full py-3 rounded-lg bg-surface-container-high text-xs font-bold text-white hover:bg-white/10 transition-all border border-white/5 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="add_circle">add_circle</span>
+                        Suggest Track
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Player Shell (BottomNavBar) -->
+<footer class="fixed bottom-0 left-0 w-full z-50 flex justify-between items-center px-12 bg-[#121214]/80 backdrop-blur-xl h-20 border-t border-[#00E5FF]/20 shadow-[0_-4px_20px_rgba(0,229,255,0.1)]">
+<!-- Track Info -->
+<div class="flex items-center gap-4 w-1/4">
+<img class="w-12 h-12 rounded-lg object-cover shadow-lg border border-white/10" data-alt="Small thumbnail of the active album art, featuring glowing cyan waves against an obsidian background, pulsing with digital rhythm." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6OhT1-x7LbMYzxLFRFrnbOlNbieu2TBQFjnaaioCsTKkjAgHJCAj8ws330iXCfQvg5KiRqVXL8oTzstvUGttIX_j2EPXF3mphz55VSwh7e0_HqW2XYVsqET-bXGKrzXVwVqH7ImPvi6e30JnPyQGLnaIzpCxQOt1ObR3yu58V8qUse74PMGvgr1jy_qOcgpDwYXMbuOj9ZvZsjlUvsLG78GRmFZs_KzwNLXFpbCvq1acORKHOQo_QgpD5ANtuDPdmz0sS2S9HUw48"/>
+<div class="overflow-hidden">
+<p class="text-sm font-bold text-white truncate">Untrue (2007)</p>
+<div class="flex items-center gap-2">
+<span class="text-[10px] text-[#00E5FF] uppercase tracking-widest">Burial</span>
+<span class="w-1 h-1 rounded-full bg-gray-600"></span>
+<span class="material-symbols-outlined text-[12px] text-[#00E5FF]" data-icon="equalizer" style="font-variation-settings: 'FILL' 1;">equalizer</span>
+</div>
+</div>
+</div>
+<!-- Controls -->
+<div class="flex flex-col items-center gap-2 w-1/2">
+<div class="flex items-center gap-8">
+<button class="text-gray-500 hover:text-white transition-colors"><span class="material-symbols-outlined" data-icon="shuffle">shuffle</span></button>
+<button class="text-gray-500 hover:text-white transition-colors"><span class="material-symbols-outlined" data-icon="skip_previous">skip_previous</span></button>
+<button class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="pause" style="font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+<button class="text-gray-500 hover:text-white transition-colors"><span class="material-symbols-outlined" data-icon="skip_next">skip_next</span></button>
+<button class="text-gray-500 hover:text-white transition-colors"><span class="material-symbols-outlined" data-icon="repeat">repeat</span></button>
+</div>
+<div class="w-full max-w-md flex items-center gap-3">
+<span class="text-[10px] text-gray-500 font-mono">1:45</span>
+<div class="flex-1 h-[4px] bg-white/10 rounded-full overflow-hidden relative group cursor-pointer">
+<div class="absolute left-0 top-0 h-full w-[45%] bg-gradient-to-r from-[#00E5FF] to-secondary-container"></div>
+</div>
+<span class="text-[10px] text-gray-500 font-mono">6:12</span>
+</div>
+</div>
+<!-- Navigation Clusters (JSON BottomNavBar Labels) -->
+<div class="flex items-center gap-8 w-1/4 justify-end">
+<div class="flex flex-col items-center gap-1 cursor-pointer text-white drop-shadow-[0_0_8px_rgba(0,229,255,0.8)]">
+<span class="material-symbols-outlined" data-icon="play_circle">play_circle</span>
+<span class="font-['Epilogue'] text-[10px] uppercase tracking-widest">Now Playing</span>
+</div>
+<div class="flex flex-col items-center gap-1 cursor-pointer text-gray-500 hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="queue_music">queue_music</span>
+<span class="font-['Epilogue'] text-[10px] uppercase tracking-widest">Queue</span>
+</div>
+<div class="flex flex-col items-center gap-1 cursor-pointer text-gray-500 hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="mic_external_on">mic_external_on</span>
+<span class="font-['Epilogue'] text-[10px] uppercase tracking-widest">Lyrics</span>
+</div>
+<div class="flex flex-col items-center gap-1 cursor-pointer text-gray-500 hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="devices">devices</span>
+<span class="font-['Epilogue'] text-[10px] uppercase tracking-widest">Devices</span>
+</div>
+</div>
+</footer>
+</body></html>

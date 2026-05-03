@@ -4,6 +4,7 @@ import cors from 'cors'
 import userRouter from './routes/user.routes.js'
 import songRouter from './routes/songs.routes.js'
 import chatRoomrouter from './routes/cahtRoom.routes.js'
+import playlistRouter from './routes/playlist.routes.js'
 
 const app = express()
 
@@ -17,7 +18,8 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use("/api/v1/songs", songRouter)
 app.use("/api/v1/users", userRouter)
-app.use("api/v1/chatRoom",chatRoomrouter)
+app.use("/api/v1/chatRoom", chatRoomrouter)
+app.use("/api/v1/playlists", playlistRouter)
 
 app.use((err, req, res, next) => {
     const statusCode = err.statuscode || 500

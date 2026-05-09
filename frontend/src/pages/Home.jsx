@@ -4,14 +4,19 @@ import Navbar from '../components/common/Navbar';
 import MusicPlayer from '../components/player/MusicPlayer';
 import SongCard from '../components/songs/SongCard';
 import SongRow from '../components/songs/SongRow';
+import { getallSongs } from '../services/song.service';
+import { useEffect, useState } from 'react';
 
 const Home = () => {
-  const featured = [
-    { title: "Midnight Pulse", artist: "Neon Circuit", image: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=800", isPlaying: true },
-    { title: "Urban Echoes", artist: "Synthetic Dreams", image: "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=800" },
-    { title: "Void Walker", artist: "The Architect", image: "https://images.unsplash.com/photo-1459749411177-042180ce673c?auto=format&fit=crop&q=80&w=800" },
-    { title: "Glitch Horizon", artist: "Frequency", image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=800" }
-  ];
+  const [featured, setfeatured] = useState([]);
+
+  useEffect(() => {
+    getallSongs().then((data) => {
+      if (data && data.data) {
+        setfeatured(data.data);
+      }
+    });
+  }, []);
 
   const recent = [
     { title: "Solar Wind", artist: "Astro", image: "https://images.unsplash.com/photo-1514525253361-bee8718a300a?auto=format&fit=crop&q=80&w=400" },
@@ -23,7 +28,7 @@ const Home = () => {
   return (
     <div className="bg-bg-primary min-h-screen flex text-text-primary selection:bg-accent/20">
       <Sidebar />
-      
+
       <main className="flex-1 ml-sidebar-width h-screen overflow-y-auto custom-scrollbar relative pt-16 pb-32">
         <Navbar />
 
@@ -35,8 +40,13 @@ const Home = () => {
               <button className="text-[11px] font-bold uppercase tracking-widest text-text-muted hover:text-accent transition-colors">See all releases</button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {featured.map((song, i) => (
-                <SongCard key={i} {...song} />
+              {featured && featured.map((song, i) => (
+                <SongCard
+                  key={i}
+                  title={song.title}
+                  artist={song.artist}
+                  image={song.coverimage}
+                />
               ))}
             </div>
           </section>
@@ -65,15 +75,15 @@ const Home = () => {
               <h2 className="text-2xl font-bold tracking-tight">Top Selection</h2>
             </div>
             <div className="space-y-1">
-              {featured.map((song, i) => (
-                <SongRow 
-                  key={i} 
-                  index={i + 1} 
-                  title={song.title} 
-                  artist={song.artist} 
-                  album="Midnight Sessions" 
-                  duration="3:45" 
-                  image={song.image} 
+              {featured && featured.map((song, i) => (
+                <SongRow
+                  key={i}
+                  index={i + 1}
+                  title={song.title}
+                  artist={song.artist}
+                  album={song.genre || "Single"}
+                  duration={song.duration || "3:45"}
+                  image={song.coverimage}
                 />
               ))}
             </div>

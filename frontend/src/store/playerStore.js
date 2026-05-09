@@ -11,7 +11,7 @@ const usePlayerStore = create((set) => ({
   // Actions
   setSong: (song) => set({ 
     currentTrack: song, 
-    isPlaying: true 
+    isPlaying: !!song 
   }),
   
   setVolume: (vol) => set({ 

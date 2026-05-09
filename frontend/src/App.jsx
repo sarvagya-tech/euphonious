@@ -8,10 +8,24 @@ import Playlist from './pages/Playlist';
 import Room from './pages/Room';
 import CreateRoom from './pages/CreateRoom';
 import Upload from './pages/Upload';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-center" toastOptions={{
+        style: {
+          background: '#0a0a0a',
+          color: '#ffffff',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+        },
+        success: {
+          iconTheme: {
+            primary: '#c8f55a',
+            secondary: '#0a0a0a',
+          },
+        },
+      }} />
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />

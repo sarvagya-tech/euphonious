@@ -40,12 +40,10 @@ const Home = () => {
               <button className="text-[11px] font-bold uppercase tracking-widest text-text-muted hover:text-accent transition-colors">See all releases</button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {featured && featured.map((song, i) => (
+              {featured && featured.map((song) => (
                 <SongCard
-                  key={i}
-                  title={song.title}
-                  artist={song.artist}
-                  image={song.coverimage}
+                  key={song._id}
+                  song={song}
                 />
               ))}
             </div>
@@ -77,13 +75,9 @@ const Home = () => {
             <div className="space-y-1">
               {featured && featured.map((song, i) => (
                 <SongRow
-                  key={i}
+                  key={song._id}
                   index={i + 1}
-                  title={song.title}
-                  artist={song.artist}
-                  album={song.genre || "Single"}
-                  duration={song.duration || "3:45"}
-                  image={song.coverimage}
+                  song={song}
                 />
               ))}
             </div>

@@ -5,7 +5,7 @@ import { verifyJwt } from "../middleware/Auth.middleware.js";
 
 const songRouter = Router();
 
-songRouter.route("/upload-song").post(verifyJwt, upload.fields([{
+songRouter.route("/upload-song").post(upload.fields([{
     name: "coverImage",
     maxCount: 1
 }, {

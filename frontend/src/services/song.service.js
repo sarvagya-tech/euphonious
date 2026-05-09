@@ -22,4 +22,16 @@ const getsearchSong = async (title, artist, genre) => {
         console.log("error in getting the search song ", error)
     }
 }
-export { getallSongs, getsearchSong }
+const uploadSong = async (formData) => {
+    try {
+        const response = await api.post('/songs/upload-song', formData, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.log("error in uploading the song", error)
+    }
+}
+export { getallSongs, getsearchSong, uploadSong }

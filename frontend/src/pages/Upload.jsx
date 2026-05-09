@@ -1,86 +1,168 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Sidebar from '../components/common/Sidebar';
 import Navbar from '../components/common/Navbar';
-import MusicPlayer from '../components/player/MusicPlayer';
+import { uploadSong } from '../services/song.service.js';
+import toast from 'react-hot-toast';
 
 const Upload = () => {
+  const [title, setTitle] = useState("");
+  const [artist, setArtist] = useState("");
+  const [genre, setGenre] = useState("");
+  const [duration, setDuration] = useState("");
+  const [audioFile, setAudioFile] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData()
+    formData.append("title", title);
+    formData.append("artist", artist);
+    formData.append("genre", genre);
+    formData.append("duration", duration);
+    formData.append("coverImage", imageFile);
+    formData.append("audio", audioFile);
+
+    try {
+      setLoading(true);
+      const response = await uploadSong(formData);
+      if (response && response.statuscode === 200) {
+        //what is toast notification? is it use for error and success messages?
+        toast.success(response.message);
+        setTitle("");
+        setArtist("");
+        setGenre("");
+        setDuration("");
+        setImageFile(null);
+        setAudioFile(null);
+      }
+      else {
+        toast.error("Failed to upload song");
+      }
+      setLoading(false);
+    }
+    catch (error) {
+      console.log(error);
+      toast.error("Failed to upload song");
+      setLoading(false);
+    }
+
+
+
+  }
+
   return (
     <div className="bg-bg-primary min-h-screen flex text-text-primary selection:bg-accent/20">
+
       <Sidebar />
-      
+
       <main className="flex-1 ml-sidebar-width h-screen overflow-y-auto custom-scrollbar relative pt-16 pb-32">
         <Navbar />
 
-        <div className="p-10 max-w-4xl mx-auto space-y-12">
-          <div className="space-y-4">
-            <h1 className="text-4xl font-bold tracking-tighter">Sonic Archive</h1>
-            <p className="text-text-muted font-medium text-sm">Upload your high-fidelity transmissions to the global network.</p>
+        <div className="p-10 max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold tracking-tight mb-2">Upload New Track</h2>
+            <p className="text-text-muted">Share your latest sound with the world.</p>
           </div>
 
-          {/* Drag & Drop Area */}
-          <div className="group cursor-pointer">
-            <div className="border-2 border-dashed border-border-primary rounded-lg p-20 flex flex-col items-center justify-center gap-6 bg-bg-secondary hover:border-accent hover:bg-accent/5 transition-all duration-300 relative overflow-hidden">
-              <div className="w-20 h-20 bg-bg-card rounded-full flex items-center justify-center border border-border-primary group-hover:border-accent/40 group-hover:scale-110 transition-all duration-500 shadow-premium">
-                <span className="material-symbols-rounded text-text-muted text-4xl group-hover:text-accent transition-colors">cloud_upload</span>
-              </div>
-              <div className="text-center">
-                <p className="text-lg font-bold mb-2">Drag and drop audio files</p>
-                <p className="text-text-muted text-[13px]">Support for FLAC, WAV, and high-bitrate MP3</p>
-              </div>
-              <button className="px-8 py-3 bg-white text-bg-primary font-bold rounded-md hover:scale-105 active:scale-95 transition-all text-[11px] tracking-widest uppercase mt-4">Browse Files</button>
-            </div>
-          </div>
+          <div className="premium-card p-8 bg-bg-card border border-border-primary rounded-xl shadow-premium">
+            <form className="space-y-8">
 
-          {/* Active Uploads */}
-          <div className="space-y-6">
-            <h3 className="text-[11px] font-bold uppercase tracking-widest text-text-muted ml-1">Current Syncing</h3>
-            <div className="space-y-3">
-              {[
-                { name: "midnight_pulse_master.flac", size: "42.5 MB", progress: 65 },
-                { name: "urban_echoes_ambient.wav", size: "128.2 MB", progress: 12 }
-              ].map((file, i) => (
-                <div key={i} className="bg-bg-card border border-border-primary rounded-lg p-6 shadow-premium group hover:border-border-hover transition-all">
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="flex items-center gap-4">
-                      <span className="material-symbols-rounded text-accent">audio_file</span>
-                      <div>
-                        <p className="text-[14px] font-bold">{file.name}</p>
-                        <p className="text-[11px] font-medium text-text-muted uppercase tracking-wider">{file.size}</p>
-                      </div>
-                    </div>
-                    <button className="text-text-muted hover:text-red-500 transition-colors">
-                      <span className="material-symbols-rounded text-xl">close</span>
-                    </button>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="w-full h-1 bg-border-primary rounded-full overflow-hidden">
-                      <div className="h-full bg-accent shadow-accent-glow transition-all duration-500" style={{ width: `${file.progress}%` }}></div>
-                    </div>
-                    <div className="flex justify-between text-[10px] mono-text text-text-muted">
-                      <span>SYNCING...</span>
-                      <span>{file.progress}%</span>
-                    </div>
-                  </div>
+              {/* Text Inputs Section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Title */}
+                <div className="space-y-2 group">
+                  <label className="text-[12px] font-bold uppercase tracking-widest text-text-muted group-focus-within:text-accent transition-colors">Song Title</label>
+                  <input
+                    type="text"
+                    placeholder="Enter song title"
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full bg-bg-secondary border border-border-primary rounded-md px-4 py-3 text-sm focus:outline-none focus:border-accent transition-all text-text-primary placeholder:text-text-muted/50 focus:shadow-[0_0_15px_rgba(200,245,90,0.1)]"
+                  />
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Validation UI */}
-          <div className="p-6 bg-accent/5 border border-accent/20 rounded-lg flex items-start gap-4">
-            <span className="material-symbols-rounded text-accent mt-0.5">info</span>
-            <div>
-              <h4 className="text-[13px] font-bold text-accent mb-1">Validation Protocol</h4>
-              <p className="text-[12px] text-text-muted leading-relaxed">
-                All files are automatically analyzed for peak levels and sonic consistency. 
-                Maximum file size: 500MB. Supported formats: .flac, .wav, .mp3, .m4a.
-              </p>
-            </div>
+                {/* Artist */}
+                <div className="space-y-2 group">
+                  <label className="text-[12px] font-bold uppercase tracking-widest text-text-muted group-focus-within:text-accent transition-colors">Artist</label>
+                  <input
+                    type="text"
+                    placeholder="Enter artist name"
+                    onChange={(e) => setArtist(e.target.value)}
+                    className="w-full bg-bg-secondary border border-border-primary rounded-md px-4 py-3 text-sm focus:outline-none focus:border-accent transition-all text-text-primary placeholder:text-text-muted/50 focus:shadow-[0_0_15px_rgba(200,245,90,0.1)]"
+                  />
+                </div>
+
+                {/* Genre */}
+                <div className="space-y-2 group">
+                  <label className="text-[12px] font-bold uppercase tracking-widest text-text-muted group-focus-within:text-accent transition-colors">Genre</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Synthwave, Electronic"
+                    onChange={(e) => setGenre(e.target.value)}
+                    className="w-full bg-bg-secondary border border-border-primary rounded-md px-4 py-3 text-sm focus:outline-none focus:border-accent transition-all text-text-primary placeholder:text-text-muted/50 focus:shadow-[0_0_15px_rgba(200,245,90,0.1)]"
+                  />
+                </div>
+
+                {/* Duration */}
+                <div className="space-y-2 group">
+                  <label className="text-[12px] font-bold uppercase tracking-widest text-text-muted group-focus-within:text-accent transition-colors">Duration (seconds)</label>
+                  <input
+                    type="number"
+                    placeholder="e.g. 210"
+                    onChange={(e) => setDuration(e.target.value)}
+                    className="w-full bg-bg-secondary border border-border-primary rounded-md px-4 py-3 text-sm focus:outline-none focus:border-accent transition-all text-text-primary placeholder:text-text-muted/50 focus:shadow-[0_0_15px_rgba(200,245,90,0.1)]"
+                  />
+                </div>
+              </div>
+
+              {/* File Inputs Section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-border-primary/50">
+
+                {/* Cover Image Upload */}
+                <div className="space-y-2">
+                  <label className="text-[12px] font-bold uppercase tracking-widest text-text-muted">Cover Image</label>
+                  <label className="border-2 border-dashed border-border-primary rounded-xl p-10 flex flex-col items-center justify-center text-center hover:border-accent hover:bg-accent/5 transition-all cursor-pointer group h-48">
+                    <div className="w-12 h-12 rounded-full bg-bg-secondary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                      <span className="material-symbols-rounded text-2xl text-text-muted group-hover:text-accent transition-colors">image</span>
+                    </div>
+                    <p className="text-sm font-bold text-text-primary mb-1">Upload Cover Art</p>
+                    <p className="text-[11px] text-text-muted uppercase tracking-wider">JPEG, PNG, WEBP</p>
+                    <input type="file" className="hidden" accept="image/*"
+                      onChange={(e) => setImageFile(e.target.files[0])} />
+                  </label>
+                </div>
+
+                {/* Audio File Upload */}
+                <div className="space-y-2">
+                  <label className="text-[12px] font-bold uppercase tracking-widest text-text-muted">Audio File</label>
+                  <label className="border-2 border-dashed border-border-primary rounded-xl p-10 flex flex-col items-center justify-center text-center hover:border-accent hover:bg-accent/5 transition-all cursor-pointer group h-48">
+                    <div className="w-12 h-12 rounded-full bg-bg-secondary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                      <span className="material-symbols-rounded text-2xl text-text-muted group-hover:text-accent transition-colors">audio_file</span>
+                    </div>
+                    <p className="text-sm font-bold text-text-primary mb-1">Upload Audio</p>
+                    <p className="text-[11px] text-text-muted uppercase tracking-wider">MP3, WAV, OGG</p>
+                    <input type="file" className="hidden" accept="audio/*"
+                      onChange={(e) => setAudioFile(e.target.files[0])} />
+                  </label>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-8 flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className={`bg-accent text-bg-primary font-bold py-3.5 px-8 rounded-full hover:scale-[1.02] active:scale-95 transition-all shadow-accent-glow flex items-center gap-2 group ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  {loading ? <><span className="material-symbols-rounded animate-spin">autorenew</span> Uploading...</> : <><span className="material-symbols-rounded group-hover:-translate-y-1 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>cloud_upload</span> Publish Track</>}
+                </button>
+              </div>
+
+            </form>
           </div>
         </div>
       </main>
-
-      <MusicPlayer />
     </div>
   );
 };

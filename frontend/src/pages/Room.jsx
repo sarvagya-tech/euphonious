@@ -4,8 +4,37 @@ import Navbar from '../components/common/Navbar';
 import MusicPlayer from '../components/player/MusicPlayer';
 import ChatBox from '../components/room/ChatBox';
 import MembersList from '../components/room/MembersList';
+import { useParams } from 'react-router-dom';
+import { useRoomStore } from '../store/roomStore';
+import { useEffect } from 'react';
+import socket, { connectSocket, disconnectSocket, joinRoom, leaveRoom, } from '../socket/socket'
+import useAuthStore from '../store/authStore';
 
 const Room = () => {
+  const { id: roomId } = useParams();
+  const { user } = useAuthStore();
+  const { addMessage } = useRoomStore();
+
+  // roomid take
+  // connection establish 
+  //join room
+  // send message 
+  // leave room
+
+
+  useEffect((() => {
+    connectSocket();
+    const currentRoomId = roomId;
+    const currentUserId = user?._id;
+    joinRoom(currentRoomId, currentUserId);
+    socket.on("newMessage", (data) => {
+      addMessage({
+        user: data.userId
+      })
+    })
+  }
+  ), [])
+
   const queue = [
     { title: "Neon Pulse", artist: "Neon Circuit", votes: 12 },
     { title: "Deep Sea", artist: "Abyss", votes: 8 },
@@ -15,7 +44,7 @@ const Room = () => {
   return (
     <div className="bg-bg-primary min-h-screen flex text-text-primary selection:bg-accent/20">
       <Sidebar />
-      
+
       <main className="flex-1 ml-sidebar-width h-screen flex flex-col relative pt-16">
         <Navbar />
 
@@ -28,7 +57,7 @@ const Room = () => {
           {/* Right: Player & Queue */}
           <div className="flex-1 flex flex-col gap-8 h-full min-w-[400px]">
             <MembersList />
-            
+
             {/* Room Player Component (Compact) */}
             <div className="premium-card p-6 flex flex-col gap-6">
               <div className="flex items-center gap-6">
@@ -39,7 +68,7 @@ const Room = () => {
                   <span className="text-[10px] font-bold uppercase tracking-widest text-accent mb-2 block">Now Transmitting</span>
                   <h3 className="text-2xl font-bold truncate mb-1">Midnight Pulse</h3>
                   <p className="text-sm font-medium text-text-muted uppercase tracking-wider">Neon Circuit</p>
-                  
+
                   <div className="flex items-center gap-4 mt-6">
                     <button className="flex items-center gap-2 px-4 py-2 bg-accent/10 border border-accent/20 rounded-md text-accent text-[11px] font-bold hover:bg-accent/20 transition-all">
                       <span className="material-symbols-rounded text-sm">sync</span> SYNC

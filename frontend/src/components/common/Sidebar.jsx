@@ -20,7 +20,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-sidebar-width bg-bg-primary border-r border-border-primary flex flex-col p-6 z-50 overflow-hidden">
+    <aside className="fixed left-0 top-0 h-full w-sidebar-width bg-bg-primary border-r border-border-primary flex flex-col p-6 pb-28 z-40 overflow-hidden">
       {/* Logo */}
       <div className="mb-10 flex items-center gap-3">
         <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center shadow-accent-glow">

@@ -1,79 +1,145 @@
 import Message from "../model/message.model.js";
 
-const initializeSocket = (io)=>{
+const users = new Map(); // socket.id -> { userId, roomId }
 
-    io.on('connection',(socket)=>{
-      
-        console.log('user connected:', socket.id);
-        let userRoom = null
-        let userIdStored = null
+const initializeSocket = (io) => {
 
-        socket.on('joinRoom',(data)=>{
+    io.on("connection", (socket) => {
+        console.log("User connected:", socket.id);
 
-            userRoom = data.roomCode;
-            userIdStored = data.userId;
-            socket.join(data.roomCode)
-            io.to(data.roomCode).emit('userJoind',{
-                userId : data.userId,
-                message : 'user joined the room'
-            })
 
-        })
+        // JOIN ROOM
 
-        socket.on('sendMessage',async(data)=>{
+        socket.on("joinRoom", (data) => {
+            const { roomId, userId } = data;
 
-            
-               const message = await Message.create({
-              room: data.roomId,
-              sender: data.userId,
-              message: data.message
-            })
-            io.to(data.roomCode).emit('newMessage',{
-              userId : data.userId,
-              message : data.message,
-              time : new Date()
-            })
-        })
-        socket.on('playSong',(data)=>{
-            socket.to(data.roomCode).emit('playSong',{
-                songUrl:data.songUrl,
-                position: data.position,
-                timestamp: Date.now()
-            })
-        })
-        socket.on('pauseSong',(data)=>{
-            socket.to(data.roomCode).emit('pauseSong',{
-                position : data.position
-            })
-        })
-        socket.on('seekSong',(data)=>{
-            socket.to(data.roomCode).emit('seekSong',{
-                position : data.position
-            })
-        })
-        socket.on('skipSong',(data)=>{
-            io.to(data.roomCode).emit('skipSong',{
-                songUrl : data.songUrl
-            })
-
-        })
-        socket.on('leaveRoom',(data)=>{
-            socket.leave(data.roomCode);
-            io.to(data.roomCode).emit('userLeft',{
-                userId : data.userId,
-                message : `${data.userId}left the room`
-
-            })
-        })
-       socket.on('disconnect', () => {
-            console.log('user disconnected:', socket.id)
-            if(userRoom){
-                io.to(userRoom).emit('userLeft', {
-                    userId: userIdStored
-                })
+            if (!roomId || !userId) {
+                return socket.emit("error", { message: "Invalid join data" });
             }
-    })
-})
-}
 
-export {initializeSocket}
+            socket.join(roomId);
+
+            users.set(socket.id, { userId, roomId });
+
+            io.to(roomId).emit("userJoined", {
+                userId,
+                message: "User joined the room",
+            });
+        });
+
+
+        // SEND MESSAGE
+
+        socket.on("sendMessage", async (data) => {
+            const { roomId, userId, message } = data;
+
+            if (!roomId || !userId || !message) return;
+
+            try {
+                await Message.create({
+                    room: roomId,
+                    sender: userId,
+                    message,
+                });
+
+                io.to(roomId).emit("newMessage", {
+                    userId,
+                    message,
+                    time: Date.now(),
+                });
+
+            } catch (err) {
+                console.error("Message error:", err);
+            }
+        });
+
+
+        // PLAY SONG (SYNCED)
+
+        socket.on("playSong", (data) => {
+            const { roomId, songUrl, position } = data;
+
+            if (!roomId || !songUrl) return;
+
+            socket.to(roomId).emit("playSong", {
+                songUrl,
+                startedAt: Date.now() - position, // 🔥 sync fix
+            });
+        });
+
+
+        // PAUSE SONG
+
+        socket.on("pauseSong", (data) => {
+            const { roomId, position } = data;
+
+            if (!roomId) return;
+
+            socket.to(roomId).emit("pauseSong", {
+                position,
+            });
+        });
+
+
+        // SEEK SONG
+
+        socket.on("seekSong", (data) => {
+            const { roomId, position } = data;
+
+            if (!roomId) return;
+
+            socket.to(roomId).emit("seekSong", {
+                position,
+            });
+        });
+
+
+        // SKIP SONG
+
+        socket.on("skipSong", (data) => {
+            const { roomId, songUrl } = data;
+
+            if (!roomId || !songUrl) return;
+
+            io.to(roomId).emit("skipSong", {
+                songUrl,
+            });
+        });
+
+        // LEAVE ROOM
+
+        socket.on("leaveRoom", () => {
+            const user = users.get(socket.id);
+
+            if (!user) return;
+
+            socket.leave(user.roomId);
+
+            io.to(user.roomId).emit("userLeft", {
+                userId: user.userId,
+            });
+
+            users.delete(socket.id);
+        });
+
+
+        // DISCONNECT
+
+        socket.on("disconnect", () => {
+            console.log("User disconnected:", socket.id);
+
+            const user = users.get(socket.id);
+
+            if (user) {
+                io.to(user.roomId).emit("userLeft", {
+                    userId: user.userId,
+                });
+
+                users.delete(socket.id);
+            }
+        });
+
+    });
+};
+
+export { initializeSocket };

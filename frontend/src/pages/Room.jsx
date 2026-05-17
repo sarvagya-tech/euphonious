@@ -5,10 +5,10 @@ import MusicPlayer from '../components/player/MusicPlayer';
 import ChatBox from '../components/room/ChatBox';
 import MembersList from '../components/room/MembersList';
 import { useParams } from 'react-router-dom';
-import { useRoomStore } from '../store/roomStore';
+import { useRoomStore } from '../store/roomStore.js';
 import { useEffect } from 'react';
-import socket, { connectSocket, disconnectSocket, joinRoom, leaveRoom, } from '../socket/socket'
-import useAuthStore from '../store/authStore';
+import socket, { connectSocket, disconnectSocket, joinRoom, leaveRoom, } from '../socket/socket.js'
+import useAuthStore from '../store/authStore.js';
 
 const Room = () => {
   const { id: roomId } = useParams();
@@ -37,7 +37,7 @@ const Room = () => {
     });
 
     return () => {
-      clearRoom();
+      leaveRoom();
       socket.off("newMessage");
     };
   }, [roomId, user, addMessage, clearRoom]));

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import useRoomStore from '../../store/roomStore'
+import useRoomStore from '../../store/roomStore.js'
 import { useParams } from 'react-router-dom';
-import useAuthStore from '../../store/authStore';
-import { sendMessage } from '../../socket/socket';
+import useAuthStore from '../../store/authStore.js';
+import { sendMessage } from '../../socket/socket.js';
 const ChatBox = () => {
   const { messages } = useRoomStore();
   // input setup 

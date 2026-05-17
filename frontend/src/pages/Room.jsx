@@ -5,7 +5,7 @@ import MusicPlayer from '../components/player/MusicPlayer';
 import ChatBox from '../components/room/ChatBox';
 import MembersList from '../components/room/MembersList';
 import { useParams } from 'react-router-dom';
-import { useRoomStore } from '../store/roomStore.js';
+import useRoomStore from '../store/roomStore.js';
 import { useEffect } from 'react';
 import socket, { connectSocket, disconnectSocket, joinRoom, leaveRoom, } from '../socket/socket.js'
 import useAuthStore from '../store/authStore.js';
@@ -22,7 +22,7 @@ const Room = () => {
   // leave room
 
 
-  useEffect((() => {
+  useEffect(() => {
     connectSocket();
     const currentRoomId = roomId;
     const currentUserId = user?._id;
@@ -31,16 +31,15 @@ const Room = () => {
       addMessage({
         user: data.userId === currentUserId ? "Me" : "other" + data.userId.substring(0, 4),
         message: data.message,
-
-      })
-      isMe: data.userId === currentUserId
+        isMe: data.userId === currentUserId
+      });
     });
 
     return () => {
       leaveRoom();
       socket.off("newMessage");
     };
-  }, [roomId, user, addMessage, clearRoom]));
+  }, [roomId, user, addMessage]);
 
   const queue = [
     { title: "Neon Pulse", artist: "Neon Circuit", votes: 12 },

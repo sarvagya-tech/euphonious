@@ -1,11 +1,23 @@
-import React from 'react';
-
+import React, { useState } from 'react';
+import useRoomStore from '../../store/roomStore'
+import { useParams } from 'react-router-dom';
+import useAuthStore from '../../store/authStore';
+import { sendMessage } from '../../socket/socket';
 const ChatBox = () => {
-  const messages = [
-    { user: "Sarah", text: "This drop is insane! 🔥", time: "22:15", isMe: false },
-    { user: "Pulse", text: "Wait for the bridge...", time: "22:16", isMe: true },
-    { user: "Mike", text: "vibe check passed", time: "22:18", isMe: false }
-  ];
+  const { messages } = useRoomStore();
+  // input setup 
+  const { id: roomId } = useParams;
+  const { user } = useAuthStore;
+
+  const [inputText, setInputText] = useState("");
+  const handleSend = () => {
+    if (!inputText.trim()) return;
+    const currentRoomId = roomId;
+    const currentUserId = user?._id;
+    sendMessage(currentRoomId, currentUserId, inputText);
+    setInputText("")
+  }
+
 
   return (
     <div className="flex-1 flex flex-col bg-bg-secondary border border-border-primary rounded-lg overflow-hidden shadow-premium">
@@ -29,11 +41,10 @@ const ChatBox = () => {
               <span className={`text-[10px] font-bold uppercase tracking-wider ${msg.isMe ? 'text-accent' : 'text-text-muted'}`}>{msg.user}</span>
               <span className="text-[9px] font-medium text-text-muted mono-text">{msg.time}</span>
             </div>
-            <div className={`max-w-[80%] px-4 py-2.5 rounded-lg text-[13px] font-medium leading-relaxed shadow-premium border ${
-              msg.isMe 
-                ? 'bg-accent/5 border-accent/20 text-text-primary' 
-                : 'bg-bg-card border-border-primary text-text-primary'
-            }`}>
+            <div className={`max-w-[80%] px-4 py-2.5 rounded-lg text-[13px] font-medium leading-relaxed shadow-premium border ${msg.isMe
+              ? 'bg-accent/5 border-accent/20 text-text-primary'
+              : 'bg-bg-card border-border-primary text-text-primary'
+              }`}>
               {msg.text}
             </div>
           </div>
@@ -43,12 +54,16 @@ const ChatBox = () => {
       {/* Input */}
       <div className="p-4 bg-bg-primary/50 border-t border-border-primary">
         <div className="relative group">
-          <input 
-            type="text" 
-            placeholder="Type your transmission..." 
-            className="w-full bg-bg-card border border-border-primary rounded-md py-3 pl-4 pr-12 text-[13px] font-medium text-text-primary outline-none focus:border-accent/40 transition-all placeholder-text-muted" 
+          <input
+            type="text"
+            placeholder="Type your mesaages..."
+            value={inputText}
+            onChange={(e) => setInputText(e.target)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+            className="w-full bg-bg-card border border-border-primary rounded-md py-3 pl-4 pr-12 text-[13px] font-medium text-text-primary outline-none focus:border-accent/40 transition-all placeholder-text-muted"
           />
-          <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-accent rounded-md flex items-center justify-center text-bg-primary hover:scale-105 active:scale-95 transition-all shadow-accent-glow">
+          <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-accent rounded-md flex items-center justify-center text-bg-primary hover:scale-105 active:scale-95 transition-all shadow-accent-glow"
+            onClick={handleSend}>
             <span className="material-symbols-rounded text-lg font-bold">north_east</span>
           </button>
         </div>

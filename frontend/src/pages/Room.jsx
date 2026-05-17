@@ -29,11 +29,18 @@ const Room = () => {
     joinRoom(currentRoomId, currentUserId);
     socket.on("newMessage", (data) => {
       addMessage({
-        user: data.userId
+        user: data.userId === currentUserId ? "Me" : "other" + data.userId.substring(0, 4),
+        message: data.message,
+
       })
-    })
-  }
-  ), [])
+      isMe: data.userId === currentUserId
+    });
+
+    return () => {
+      clearRoom();
+      socket.off("newMessage");
+    };
+  }, [roomId, user, addMessage, clearRoom]));
 
   const queue = [
     { title: "Neon Pulse", artist: "Neon Circuit", votes: 12 },

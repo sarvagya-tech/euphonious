@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 const SOCKET_URL = "http://localhost:7000"
 
 const socket = io(SOCKET_URL, {
-    autoConnect: false,
+    autoConnect: true,
     withCredentials: true
 })
 
@@ -18,8 +18,8 @@ export const disconnectSocket = () => {
     }
 };
 
-export const joinRoom = (roomId, userId) => {
-    socket.emit("joinRoom", { roomId, userId });
+export const joinRoom = (roomId, userId,code) => {
+    socket.emit("joinRoom", { roomId, userId,code });
 };
 
 export const leaveRoom = () => {

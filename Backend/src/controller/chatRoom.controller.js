@@ -34,10 +34,12 @@ const createchatRoom = asynchandler(async(req,res)=>{
     const userId = req.user._id
     const user = await User.findById(userId);
     
-    const song = songId ? await Song.findById(songId) : null
-     if(!song){
-        throw new ApiError(404,"song not found")
-     }
+    if (songId) {
+        const song = await Song.findById(songId);
+        if (!song) {
+            throw new ApiError(404, "song not found");
+        }
+    }
 
      const room = await Room.create({
         name,
@@ -69,6 +71,7 @@ const joiningRoom = asynchandler(async(req,res)=>{
     */
   const {roomId} = req.params;
   const{code} = req.body;
+
   if(!roomId){
     throw new ApiError(400,"roomId is required")
   }
@@ -82,15 +85,20 @@ const joiningRoom = asynchandler(async(req,res)=>{
   if(!room){
     throw new ApiError(404,"room doesn't exist")
   }
+  
   if(!room.isroomActive){
     throw new ApiError(400,"room no longer availabe ")
   }
 
-  if(code!==room.code){
-    throw new ApiError(404, "code is wrong")
+  const normalizedCode = String(code).trim().toUpperCase();
+  if (normalizedCode !== room.code) {
+    throw new ApiError(404, "code is wrong");
   }
-  if(room.members.includes(userId)){
-    throw new ApiError(400,"you are already in the room")
+  const alreadyMember = room.members.some((m) => String(m) === String(userId));// this is to check if the user is already a member of the room
+  if (alreadyMember) {
+    return res.status(200).json(
+      new ApiResponse(200, room, "already in this room")
+    );
   }
   const addMember = await Room.findByIdAndUpdate(
     roomId,

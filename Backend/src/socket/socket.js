@@ -1,4 +1,5 @@
 import Message from "../model/message.model.js";
+import Room from "../model/chatRoom.model.js";
 
 const users = new Map(); // socket.id -> { userId, roomId }
 
@@ -8,23 +9,46 @@ const initializeSocket = (io) => {
         console.log("User connected:", socket.id);
 
 
-        // JOIN ROOM
+        // JOIN ROOM (requires valid access code unless user is the host)
 
-        socket.on("joinRoom", (data) => {
-            const { roomId, userId } = data;
+        socket.on("joinRoom", async (data) => {
+            const { roomId, userId, code } = data;
 
             if (!roomId || !userId) {
-                return socket.emit("error", { message: "Invalid join data" });
+                return socket.emit("joinError", { message: "Room id and user id are required" });
             }
 
-            socket.join(roomId);
+            try {
+                const room = await Room.findById(roomId).select("code isroomActive hostedBy");
+                if (!room || !room.isroomActive) {
+                    return socket.emit("joinError", { message: "Room not found or inactive" });
+                }
 
-            users.set(socket.id, { userId, roomId });
+                const normalized = code != null ? String(code).trim().toUpperCase() : "";
+                const isHost =
+                    room.hostedBy && String(room.hostedBy) === String(userId);
 
-            io.to(roomId).emit("userJoined", {
-                userId,
-                message: "User joined the room",
-            });
+                if (isHost) {
+                    if (normalized && normalized !== room.code) {
+                        return socket.emit("joinError", { message: "Invalid access code" });
+                    }
+                } else {
+                    if (!normalized || normalized !== room.code) {
+                        return socket.emit("joinError", { message: "Invalid access code" });
+                    }
+                }
+
+                socket.join(roomId);
+                users.set(socket.id, { userId, roomId });
+
+                io.to(roomId).emit("userJoined", {
+                    userId,
+                    message: "User joined the room",
+                });
+            } catch (err) {
+                console.error("joinRoom socket error:", err);
+                socket.emit("joinError", { message: "Could not verify room" });
+            }
         });
 
 

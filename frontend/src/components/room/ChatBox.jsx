@@ -6,8 +6,8 @@ import { sendMessage } from '../../socket/socket.js';
 const ChatBox = () => {
   const { messages } = useRoomStore();
   // input setup 
-  const { id: roomId } = useParams;
-  const { user } = useAuthStore;
+  const { id: roomId } = useParams();
+  const { user } = useAuthStore();
 
   const [inputText, setInputText] = useState("");
   const handleSend = () => {
@@ -45,7 +45,7 @@ const ChatBox = () => {
               ? 'bg-accent/5 border-accent/20 text-text-primary'
               : 'bg-bg-card border-border-primary text-text-primary'
               }`}>
-              {msg.text}
+              {msg.message}
             </div>
           </div>
         ))}
@@ -58,7 +58,7 @@ const ChatBox = () => {
             type="text"
             placeholder="Type your mesaages..."
             value={inputText}
-            onChange={(e) => setInputText(e.target)}
+            onChange={(e) => setInputText(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             className="w-full bg-bg-card border border-border-primary rounded-md py-3 pl-4 pr-12 text-[13px] font-medium text-text-primary outline-none focus:border-accent/40 transition-all placeholder-text-muted"
           />

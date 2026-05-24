@@ -1,6 +1,7 @@
 import React from 'react';
 
 const MembersList = () => {
+  
   const members = [
     { name: "Sarah Volkov", status: "online", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC0ScQOyv7Lq_ddCAsIHufT1_vz7AQ2qLJwbEGUETsohSD_kOXDa_q4qsKqo1C7gWmVQNFe7PH5tfLXOKgCxpGIgkWBkRW_NVPhwOomsKFXY9792dbklNTQU88TTRm_7JBaOSr-J1sJtBVKulyQTy94-G3lxzIAy7Rx1oIo8DnK8C1UT8RzkRzW5jg22T8QsaCSi_wqJ8Vm6U6C8sjsTMBMx0fc09x0tABQU0y7sMTtNywn5yAAvU9QMthlRcWh8jBTU7QyfDM0hKnJ" },
     { name: "Mike Shinoda", status: "offline", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuB-15v9UG-wF2-VDYKYWl1DbQl6CX_Lp4mu5sK2cT_iHi17wvhGBdU7holCySAxitgn819SpMwgDmtyLhF8UbtIAjVichgcfsoMZ5_-Uwr9sjQPdABxsYYpnE4pa3juDHMJeLPs6BIRsihBClnzLP_pYhLfFql3Jk3cTPkw3dD4ULJYmxm-3Y65QEjj2QBTtQlgHOFDpT9fU2aOvCI1fUADLgMJd_VyNqN_iVg-uPApLUGUfGWWqdI8h4k6eu0CLhrlj4jFnNzgGozb" },

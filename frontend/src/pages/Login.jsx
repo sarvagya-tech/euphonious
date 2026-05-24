@@ -1,10 +1,34 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { loginService } from '../services/auth.service.js';
+import useAuthStore from '../store/authStore.js';
 
 const Login = () => {
+  const navigate = useNavigate();
+  const setUser = useAuthStore((s) => s.setUser);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const result = await loginService(email, password);
+      const { user, accessToken } = result.data;
+      setUser(user, accessToken);
+      toast.success(result.message || 'Logged in successfully');
+      navigate('/home');
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-bg-primary flex items-center justify-center p-8 relative overflow-hidden">
-      {/* Decorative Blur */}
       <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/5 blur-[120px] rounded-full"></div>
       <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 blur-[120px] rounded-full"></div>
 
@@ -17,30 +41,40 @@ const Login = () => {
           <p className="text-[13px] font-medium text-text-muted">Enter your credentials to access your archive</p>
         </div>
 
-        <form className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <label className="text-[11px] font-bold text-text-muted uppercase tracking-widest ml-1">Email Identity</label>
-            <input 
-              className="w-full bg-[#111] border border-[#1e1e1e] rounded-md py-3.5 px-5 text-text-primary text-sm outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/10 transition-all placeholder-[#333]" 
-              type="email" 
-              placeholder="archive@aura.fm" 
+            <input
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-[#111] border border-[#1e1e1e] rounded-md py-3.5 px-5 text-text-primary text-sm outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/10 transition-all placeholder-[#333]"
+              type="email"
+              placeholder="archive@aura.fm"
             />
           </div>
-          
+
           <div className="space-y-2">
             <div className="flex justify-between items-center px-1">
               <label className="text-[11px] font-bold text-text-muted uppercase tracking-widest">Security Cipher</label>
               <button type="button" className="text-[10px] font-bold text-accent hover:underline uppercase tracking-wider">Forgot?</button>
             </div>
-            <input 
-              className="w-full bg-[#111] border border-[#1e1e1e] rounded-md py-3.5 px-5 text-text-primary text-sm outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/10 transition-all placeholder-[#333]" 
-              type="password" 
-              placeholder="••••••••" 
+            <input
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-[#111] border border-[#1e1e1e] rounded-md py-3.5 px-5 text-text-primary text-sm outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/10 transition-all placeholder-[#333]"
+              type="password"
+              placeholder="••••••••"
             />
           </div>
 
-          <button className="w-full bg-accent text-bg-primary font-bold py-4 rounded-md hover:scale-[1.02] active:scale-[0.98] transition-all text-xs tracking-widest uppercase shadow-accent-glow">
-            Initialize Access
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-accent text-bg-primary font-bold py-4 rounded-md hover:scale-[1.02] active:scale-[0.98] transition-all text-xs tracking-widest uppercase shadow-accent-glow disabled:opacity-60"
+          >
+            {loading ? 'Signing in...' : 'Initialize Access'}
           </button>
         </form>
 

@@ -6,7 +6,7 @@ import Search from './pages/Search';
 import Profile from './pages/Profile';
 import Playlist from './pages/Playlist';
 import Room from './pages/Room';
-import CreateRoom from './pages/CreateRoom';
+import RoomSelection from './pages/RoomSelection';
 import Upload from './pages/Upload';
 import { Toaster } from 'react-hot-toast';
 
@@ -34,8 +34,8 @@ function App() {
         <Route path="/search" element={<Search />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/playlist" element={<Playlist />} />
-        <Route path="/room" element={<Room />} />
-        <Route path="/create-room" element={<CreateRoom />} />
+        <Route path="/room" element={<RoomSelection />} />
+        <Route path="/room/:id" element={<Room />} />
         <Route path="/upload" element={<Upload />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

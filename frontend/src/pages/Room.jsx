@@ -23,15 +23,19 @@ const Room = () => {
 
 
   useEffect(() => {
+    const code = sessionStorage.getItem(`roomJoin:${roomId}`)
+
+
     connectSocket();
     const currentRoomId = roomId;
     const currentUserId = user?._id;
-    joinRoom(currentRoomId, currentUserId);
+    joinRoom(currentRoomId, currentUserId,code);
     socket.on("newMessage", (data) => {
       addMessage({
         user: data.userId === currentUserId ? "Me" : "other" + data.userId.substring(0, 4),
         message: data.message,
-        isMe: data.userId === currentUserId
+        isMe: data.userId === currentUserId,
+        time: new Date().toLocaleTimeString(),
       });
     });
 

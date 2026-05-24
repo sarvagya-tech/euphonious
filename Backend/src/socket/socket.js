@@ -24,7 +24,7 @@ const initializeSocket = (io) => {
                     return socket.emit("joinError", { message: "Room not found or inactive" });
                 }
 
-                const normalized = code != null ? String(code).trim().toUpperCase() : "";
+                const normalized = code != null ? String(code) : "";
                 const isHost =
                     room.hostedBy && String(room.hostedBy) === String(userId);
 
@@ -34,6 +34,7 @@ const initializeSocket = (io) => {
                     }
                 } else {
                     if (!normalized || normalized !== room.code) {
+                        console.log(normalized, room.code);
                         return socket.emit("joinError", { message: "Invalid access code" });
                     }
                 }

@@ -26,7 +26,7 @@ const deleteRoomService = async (roomId) => {
 
 const getCurrentRoom = async (roomId) => {
     const currentRoom = await api.get(`/chatRoom/${roomId}`);
-    return currentRoom;
+    return currentRoom.data;
 };
 
 export { createRoom, joinRoom, leaveRoomService, deleteRoomService, getCurrentRoom };

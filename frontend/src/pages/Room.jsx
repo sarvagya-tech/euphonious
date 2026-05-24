@@ -9,11 +9,13 @@ import useRoomStore from '../store/roomStore.js';
 import { useEffect } from 'react';
 import socket, { connectSocket, disconnectSocket, joinRoom, leaveRoom, } from '../socket/socket.js'
 import useAuthStore from '../store/authStore.js';
+import { getCurrentRoom } from '../services/room.service.js';
 
 const Room = () => {
   const { id: roomId } = useParams();
   const { user } = useAuthStore();
   const { addMessage } = useRoomStore();
+  const { setRoom, setMembers } = useRoomStore();
 
   // roomid take
   // connection establish 
@@ -22,10 +24,35 @@ const Room = () => {
   // leave room
 
 
+
+  // write the required info in this 
+  const queue = [
+    {},
+    {},
+    {}
+  ] 
+
+
   useEffect(() => {
     const code = sessionStorage.getItem(`roomJoin:${roomId}`)
 
+ const fetchCurrentRoom = async () => {
 
+  try {
+
+    const roomData =
+      await getCurrentRoom(roomId);
+
+    console.log(roomData);
+
+    setMembers(roomData.data?.members ?? [])
+
+  } catch (err) {
+
+    console.log(err);
+  }
+};
+ fetchCurrentRoom();
     connectSocket();
     const currentRoomId = roomId;
     const currentUserId = user?._id;
@@ -43,14 +70,9 @@ const Room = () => {
       leaveRoom();
       socket.off("newMessage");
     };
-  }, [roomId, user, addMessage]);
+  }, [roomId, user, addMessage,setMembers]);
 
-  const queue = [
-    { title: "Neon Pulse", artist: "Neon Circuit", votes: 12 },
-    { title: "Deep Sea", artist: "Abyss", votes: 8 },
-    { title: "Urban Sky", artist: "Skyline", votes: 5 },
-  ];
-
+  
   return (
     <div className="bg-bg-primary min-h-screen flex text-text-primary selection:bg-accent/20">
       <Sidebar />

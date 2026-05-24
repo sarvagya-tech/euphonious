@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Sidebar from '../components/common/Sidebar';
 import Navbar from '../components/common/Navbar';
 import MusicPlayer from '../components/player/MusicPlayer';
 import { createRoom, joinRoom } from '../services/room.service.js';
+import useRoomStore from '../store/roomStore.js';
+import useAuthStore from '../store/authStore.js';
+
 
 const RoomSelection = () => {
   const [mode, setMode] = useState('selection');
@@ -13,6 +16,7 @@ const RoomSelection = () => {
   const [description, setDescription] = useState('');
   const [code, setCode] = useState('');
   const [joinRoomId, setJoinRoomId] = useState('');
+
 
   const handleCreateRoom = async (e) => {
     e.preventDefault();
@@ -45,7 +49,8 @@ const RoomSelection = () => {
       return;
     }
     try {
-      await joinRoom(rid, normalizedCode);
+      const result = await joinRoom(rid, normalizedCode);
+      
       sessionStorage.setItem(`roomJoin:${rid}`, normalizedCode);
       navigate(`/room/${rid}`, { state: { joinCode: normalizedCode } });
       toast.success('Joined room');
@@ -53,6 +58,7 @@ const RoomSelection = () => {
       toast.error(err?.response?.data?.message || 'Invalid room ID or code');
     }
   };
+  
 
   return (
     <div className="bg-bg-primary min-h-screen flex selection:bg-accent/20 text-text-primary">

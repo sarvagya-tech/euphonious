@@ -110,6 +110,7 @@ const joiningRoom = asynchandler(async(req,res)=>{
         new : true
     }
   )
+  .populate('members', 'fullname avatar')
   if(!addMember){
     throw new ApiError(404,"memeber not addedd yet")
   }

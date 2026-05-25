@@ -10,12 +10,16 @@ import { useEffect } from 'react';
 import socket, { connectSocket, disconnectSocket, joinRoom, leaveRoom, } from '../socket/socket.js'
 import useAuthStore from '../store/authStore.js';
 import { getCurrentRoom } from '../services/room.service.js';
+import { getallSongs } from '../services/song.service.js';
+import usePlayerStore from '../store/playerStore.js';
 
 const Room = () => {
   const { id: roomId } = useParams();
   const { user } = useAuthStore();
   const { addMessage } = useRoomStore();
   const { setRoom, setMembers } = useRoomStore();
+  const {setQueue} = usePlayerStore();
+  const {queue} = usePlayerStore();
 
   // roomid take
   // connection establish 
@@ -26,11 +30,7 @@ const Room = () => {
 
 
   // write the required info in this 
-  const queue = [
-    {},
-    {},
-    {}
-  ] 
+ 
 
 
   useEffect(() => {
@@ -58,20 +58,39 @@ const Room = () => {
     const currentUserId = user?._id;
     joinRoom(currentRoomId, currentUserId,code);
     socket.on("newMessage", (data) => {
+      
       addMessage({
-        user: data.userId === currentUserId ? "Me" : "other" + data.userId.substring(0, 4),
+        user: data.userId === currentUserId ? "Me" : data.senderName,
         message: data.message,
         isMe: data.userId === currentUserId,
         time: new Date().toLocaleTimeString(),
       });
     });
+    
 
     return () => {
       leaveRoom();
       socket.off("newMessage");
     };
   }, [roomId, user, addMessage,setMembers]);
+  
+  useEffect(()=>{
 
+    getallSongs().then((data)=>{
+
+      if(data && data.data){
+       
+        setQueue(data.data);
+      }
+     });
+
+  },[])
+
+  const songQueue = queue[0]?.data
+  console.log(songQueue); 
+ 
+        
+   
   
   return (
     <div className="bg-bg-primary min-h-screen flex text-text-primary selection:bg-accent/20">
@@ -131,7 +150,7 @@ const Room = () => {
                 <button className="text-[10px] font-bold text-accent hover:underline uppercase tracking-wider">Suggest Track</button>
               </div>
               <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
-                {queue.map((item, i) => (
+                {songQueue.map((item, i) => (
                   <div key={i} className="flex items-center justify-between p-3 rounded-md hover:bg-white/[0.03] transition-all border border-transparent hover:border-border-hover group">
                     <div className="flex-1 min-w-0">
                       <p className="text-[13px] font-bold text-text-primary truncate">{item.title}</p>

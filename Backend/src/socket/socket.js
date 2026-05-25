@@ -1,5 +1,6 @@
 import Message from "../model/message.model.js";
 import Room from "../model/chatRoom.model.js";
+import User from "../model/user.model.js";
 
 const users = new Map(); // socket.id -> { userId, roomId }
 
@@ -61,14 +62,15 @@ const initializeSocket = (io) => {
             if (!roomId || !userId || !message) return;
 
             try {
-                await Message.create({
+                 await Message.create({
                     room: roomId,
                     sender: userId,
                     message,
                 });
-
+                const sender = await User.findById(userId).select('fullname');
                 io.to(roomId).emit("newMessage", {
                     userId,
+                    senderName : sender?.fullname ?? 'Unknown',
                     message,
                     time: Date.now(),
                 });

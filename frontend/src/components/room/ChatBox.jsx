@@ -8,6 +8,7 @@ const ChatBox = () => {
   // input setup 
   const { id: roomId } = useParams();
   const { user } = useAuthStore();
+  
 
   const [inputText, setInputText] = useState("");
   const handleSend = () => {

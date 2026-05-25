@@ -17,22 +17,24 @@ const Room = () => {
   const { id: roomId } = useParams();
   const { user } = useAuthStore();
   const { addMessage } = useRoomStore();
-  const { setRoom, setMembers,currentTrack,isPlaying,progress,setCurrentTrack } = useRoomStore();
+  const { setRoom, setMembers } = useRoomStore();
   const {setQueue} = usePlayerStore();
   const {queue} = usePlayerStore();
-  const [song,setSong] = useState('')
+  const {currentTrack,isPlaying,progress,volume,setSong,setVolume} = usePlayerStore()
+  
 
-  console.log(queue)
-
-  const isCurrentSong = currentTrack?._id === song._id;
-  const isThisSongPlaying = isCurrentSong && isPlaying;
-
-  const handleSongs = ()=>{
+  
+const handleVolume = (e)=>{
+                 setVolume(parseFloat(e.target.value))
+}
+  const handleSongs = (song)=>{
+    const isCurrentSong = currentTrack?._id === song._id;
+    const isThisSongPlaying = isCurrentSong && isPlaying;
     if(isCurrentSong){
       togglePlayPause()
     }
     else {
-      setCurrentTrack(song);
+      setSong(song);
     }
   }
 
@@ -163,9 +165,15 @@ const Room = () => {
 
                       <div className="flex items-center gap-2.5">
                         <span className="material-symbols-rounded text-text-muted text-base">volume_up</span>
-                        <div className="flex-1 h-1.5 bg-border-primary rounded-full overflow-hidden">
-                          <div className="h-full w-3/4 bg-text-primary/80"></div>
-                        </div>
+                        <input
+                        type='range'
+                        min={0}
+                        max={1}
+                        step={0.01}
+                        value={volume}
+                        onChange={handleVolume}
+                        className="flex-1 h-1.5 bg-border-primary rounded-full appearance-none cursor-pointer accent-accent"/>
+                        
                       </div>
                     </div>
                   </div>
@@ -183,8 +191,8 @@ const Room = () => {
                   {queue.map((song, i) => (
                     <div
                       key={i}
-                      song = {song}
-                      onClick={handleSongs}
+                      
+                      onClick={()=>handleSongs(song)}
                       className="w-full text-left flex items-center justify-between p-3 rounded-md hover:bg-white/[0.03] transition-all border border-transparent hover:border-border-hover group"
                     >
                       <div className="flex-1 min-w-0">
@@ -201,7 +209,6 @@ const Room = () => {
         </div>
       </main>
 
-      <MusicPlayer />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import useRoomStore from '../../store/roomStore.js'
 import { useParams } from 'react-router-dom';
 import useAuthStore from '../../store/authStore.js';
@@ -36,6 +36,10 @@ const ChatBox = () => {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+        {messages.length === 0 && (
+          <p className="text-[12px] text-text-muted">No messages yet. Start the conversation.</p>
+        )}
+
         {messages.map((msg, i) => (
           <div key={i} className={`flex flex-col ${msg.isMe ? 'items-end' : 'items-start'}`}>
             <div className="flex items-center gap-2 mb-1.5 px-1">
@@ -57,7 +61,7 @@ const ChatBox = () => {
         <div className="relative group">
           <input
             type="text"
-            placeholder="Type your mesaages..."
+            placeholder="Type your message..."
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}

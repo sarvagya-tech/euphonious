@@ -25,10 +25,7 @@ const usePlayerStore = create((set) => ({
   setProgress: (progress) => set({ 
     progress: progress 
   }),
-  
-  setQueue: (song) => set((state) => ({ 
-    queue: [...state.queue, song] 
-  })),
+   setQueue: (songs) => set({ queue: songs }),
   
   toggleMute: () => set((state) => ({ 
     muted: !state.muted 

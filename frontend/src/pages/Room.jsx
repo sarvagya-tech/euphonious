@@ -20,6 +20,7 @@ const Room = () => {
   const { setRoom, setMembers } = useRoomStore();
   const {setQueue} = usePlayerStore();
   const {queue} = usePlayerStore();
+  console.log(queue)
 
   useEffect(() => {
     const code = sessionStorage.getItem(`roomJoin:${roomId}`)
@@ -69,13 +70,13 @@ const Room = () => {
          if(data && data.data){
           setQueue(data.data);
           
+          
           } }
         );
 
-  },[])
+  },[setQueue])
 // console.log(queue)
- const songQueue = queue[0]?.data || [];
-  // console.log(songQueue); 
+ 
   const nowPlaying = {}
  
   return (
@@ -129,7 +130,7 @@ const Room = () => {
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
-                  {songQueue.map((song, i) => (
+                  {queue.map((song, i) => (
                     <div
                       key={i}
                       className="w-full text-left flex items-center justify-between p-3 rounded-md hover:bg-white/[0.03] transition-all border border-transparent hover:border-border-hover group"

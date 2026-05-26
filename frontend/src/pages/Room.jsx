@@ -4,6 +4,7 @@ import Navbar from '../components/common/Navbar';
 import MusicPlayer from '../components/player/MusicPlayer';
 import ChatBox from '../components/room/ChatBox';
 import MembersList from '../components/room/MembersList';
+import RoomPlayer from '../components/room/RoomPlayer.jsx';
 import { useParams } from 'react-router-dom';
 import useRoomStore from '../store/roomStore.js';
 import { useEffect } from 'react';
@@ -12,6 +13,7 @@ import useAuthStore from '../store/authStore.js';
 import { getCurrentRoom } from '../services/room.service.js';
 import { getallSongs } from '../services/song.service.js';
 import usePlayerStore from '../store/playerStore.js';
+import usePlayer from '../components/hooks/usePlayer.js';
 
 const Room = () => {
   const { id: roomId } = useParams();
@@ -20,13 +22,10 @@ const Room = () => {
   const { setRoom, setMembers } = useRoomStore();
   const {setQueue} = usePlayerStore();
   const {queue} = usePlayerStore();
-  const {currentTrack,isPlaying,progress,volume,setSong,setVolume} = usePlayerStore()
+   
+  const {currentTrack,isPlaying,progress,volume,setSong,setVolume,togglePlayPause} = usePlayerStore()
   
-
-  
-const handleVolume = (e)=>{
-                 setVolume(parseFloat(e.target.value))
-}
+ 
   const handleSongs = (song)=>{
     const isCurrentSong = currentTrack?._id === song._id;
     const isThisSongPlaying = isCurrentSong && isPlaying;
@@ -114,73 +113,7 @@ const handleVolume = (e)=>{
             <section className="xl:col-span-5 flex flex-col gap-6">
               <MembersList />
 
-              <div className="premium-card p-4 md:p-5">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-accent mb-3">Now Playing</p>
-
-                {currentTrack ? (
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-16 h-16 rounded-md overflow-hidden border border-border-primary shadow-premium bg-bg-card shrink-0">
-                        {currentTrack.coverimage ? (
-                          <img src={currentTrack.coverimage} className="w-full h-full object-cover" alt={currentTrack.title} />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <span className="material-symbols-rounded text-text-muted">music_note</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-                        <h3 className="text-base font-bold truncate">{currentTrack.title}</h3>
-                        <p className="text-[11px] font-medium text-text-muted uppercase tracking-wider truncate">{currentTrack.artist || 'Unknown Artist'}</p>
-                        <span className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 bg-accent/10 border border-accent/20 rounded-md text-accent text-[10px] font-bold">
-                          <span className="material-symbols-rounded text-sm">sync</span>
-                          Live
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2.5">
-                      <div className="flex items-center justify-center gap-3">
-                        <button type="button" className="w-8 h-8 rounded-md border border-border-primary text-text-muted hover:text-text-primary hover:border-border-hover transition-colors flex items-center justify-center">
-                          <span className="material-symbols-rounded text-lg">skip_previous</span>
-                        </button>
-                        <button type="button" className="w-10 h-10 rounded-full bg-accent text-bg-primary shadow-accent-glow flex items-center justify-center">
-                          <span className="material-symbols-rounded text-xl">play_arrow</span>
-                        </button>
-                        <button type="button" className="w-8 h-8 rounded-md border border-border-primary text-text-muted hover:text-text-primary hover:border-border-hover transition-colors flex items-center justify-center">
-                          <span className="material-symbols-rounded text-lg">skip_next</span>
-                        </button>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <div className="w-full h-1.5 bg-border-primary rounded-full overflow-hidden">
-                          <div className="h-full w-1/3 bg-accent"></div>
-                        </div>
-                        <div className="flex justify-between text-[10px] text-text-muted mono-text">
-                          <span>01:12</span>
-                          <span>03:45</span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2.5">
-                        <span className="material-symbols-rounded text-text-muted text-base">volume_up</span>
-                        <input
-                        type='range'
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={volume}
-                        onChange={handleVolume}
-                        className="flex-1 h-1.5 bg-border-primary rounded-full appearance-none cursor-pointer accent-accent"/>
-                        
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-[12px] text-text-muted">No song selected yet.</p>
-                )}
-              </div>
+              <RoomPlayer />
 
               <div className="bg-bg-secondary border border-border-primary rounded-lg flex-1 flex flex-col overflow-hidden shadow-premium min-h-[260px] max-h-[360px]">
                 <div className="px-6 py-4 border-b border-border-primary">

@@ -1,59 +1,117 @@
-import React from 'react';
+
+import usePlayerStore from "../../store/playerStore";
+import useRoomStore from "../../store/roomStore";
+import usePlayer from "../hooks/usePlayer.js";
+
+
 
 const RoomPlayer = () => {
-  return (
-    <div className="bg-zinc-950 rounded-[48px] p-10 border border-white/[0.03] shadow-soft relative overflow-hidden group">
-      <div className="absolute top-0 right-0 p-10 opacity-5">
-        <span className="material-symbols-rounded text-[120px]">equalizer</span>
-      </div>
-      
-      <div className="flex flex-col md:flex-row items-center gap-12 relative z-10">
-        <div className="w-56 h-56 rounded-[40px] overflow-hidden shadow-2xl border border-white/[0.05] flex-shrink-0 group-hover:scale-105 transition-transform duration-1000 relative">
-          <img 
-            className="w-full h-full object-cover opacity-80" 
-            src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=800" 
-            alt="Now Playing" 
-          />
-          <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
-            <span className="material-symbols-rounded text-white text-5xl">stream</span>
-          </div>
-        </div>
+  const { howlRef, handleSeek } = usePlayer();
+  
+  const { 
+    currentTrack, 
+    isPlaying, 
+    progress, 
+    volume, 
+    muted,
+    togglePlayPause,
+    setVolume,
+    toggleMute 
+  } = usePlayerStore();
 
-        <div className="flex-1 text-center md:text-left">
-          <div className="flex items-center justify-center md:justify-start gap-4 mb-6">
-            <span className="px-3 py-1 bg-white text-black text-[9px] font-black uppercase tracking-ultra-wide rounded-full flex items-center gap-2">
-              <span className="material-symbols-rounded text-[10px]">podcasts</span> Primary Stream
-            </span>
-            <div className="flex gap-1 items-end h-3">
-              <div className="w-1 bg-white/20 h-full"></div>
-              <div className="w-1 bg-white h-2/3 animate-pulse"></div>
-              <div className="w-1 bg-white/40 h-full"></div>
+  
+  if (!currentTrack) return null;
+  const formatTime = (second)=>{
+  if(!second || isNaN(second)) return "0:00";
+  const mins = Math.floor(second/60);
+  const sec = Math.floor(second % 60); 
+  return `${mins}:${sec.toString().padStart(2,'0')}`
+ }  
+  const duration = howlRef.current?.duration() || 0;
+  const currentTime = howlRef.current?.seek() || 0;
+
+   const onProgressClick = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = (x / rect.width) * 100;
+    handleSeek(percentage);
+  };
+
+    const handleVolume = (e)=>{
+        setVolume(parseFloat(e.target.value))
+      }
+
+  return (
+    <div className="premium-card p-4 md:p-5">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-accent mb-3">Now Playing</p>
+
+      {currentTrack ? (
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-16 h-16 rounded-md overflow-hidden border border-border-primary shadow-premium bg-bg-card shrink-0">
+              {currentTrack.coverimage ? (
+                <img src={currentTrack.coverimage} className="w-full h-full object-cover" alt={currentTrack.title} />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <span className="material-symbols-rounded text-text-muted">music_note</span>
+                </div>
+              )}
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <h3 className="text-base font-bold truncate">{currentTrack.title}</h3>
+              <p className="text-[11px] font-medium text-text-muted uppercase tracking-wider truncate">{currentTrack.artist || 'Unknown Artist'}</p>
+              <span className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 bg-accent/10 border border-accent/20 rounded-md text-accent text-[10px] font-bold">
+                <span className="material-symbols-rounded text-sm">sync</span>
+                Live
+              </span>
             </div>
           </div>
-          <h2 className="text-5xl font-bold text-white mb-3 tracking-tightest flex items-center justify-center md:justify-start gap-5">
-            Midnight Pulse
-          </h2>
-          <p className="text-zinc-600 text-lg font-medium mb-10 tracking-tight flex items-center justify-center md:justify-start gap-3">
-            <span className="material-symbols-rounded text-zinc-700">artist</span> Neon Circuit • <span className="italic opacity-60">Electric Skies</span>
-          </p>
-          
-          <div className="flex items-center justify-center md:justify-start gap-4">
-            <button className="px-10 py-4 bg-white text-black rounded-premium font-black text-xs hover:opacity-90 active:scale-[0.98] transition-all shadow-xl shadow-white/5 flex items-center gap-3">
-              <span className="material-symbols-rounded text-lg">sync</span> SYNC STREAM
-            </button>
-            <button className="p-4 bg-white/[0.03] border border-white/[0.05] text-white rounded-premium hover:bg-white/[0.06] transition-all group">
-              <span className="material-symbols-rounded text-2xl group-hover:scale-110 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
-            </button>
+
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-center gap-3">
+              <button type="button" className="w-8 h-8 rounded-md border border-border-primary text-text-muted hover:text-text-primary hover:border-border-hover transition-colors flex items-center justify-center">
+                <span className="material-symbols-rounded text-lg">skip_previous</span>
+              </button>
+              <button type="button" className="w-10 h-10 rounded-full bg-accent text-bg-primary shadow-accent-glow flex items-center justify-center" onClick={togglePlayPause}>
+                <span className="material-symbols-rounded text-xl">{isPlaying ? "pause" : 'play_arrow'}</span>
+              </button>
+              <button type="button" className="w-8 h-8 rounded-md border border-border-primary text-text-muted hover:text-text-primary hover:border-border-hover transition-colors flex items-center justify-center">
+                <span className="material-symbols-rounded text-lg">skip_next</span>
+              </button>
+            </div>
+
+            <div className="space-y-1.5">
+              <div className="w-full h-1.5 bg-border-primary rounded-full overflow-hidden cursor-pointer" onClick={onProgressClick}>
+                <div className="h-full  bg-accent" style={{ width: `${progress}%` }}></div>
+              </div>
+              <div className="flex justify-between text-[10px] text-text-muted mono-text">
+                <span>{formatTime(currentTime)}</span>
+                <span>{formatTime(duration)}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <span className="material-symbols-rounded text-text-muted text-base">volume_up</span>
+              <input
+                type='range'
+                min={0}
+                max={1}
+                step={0.01}
+                value={volume}
+                onChange={handleVolume}
+                className="flex-1 h-1.5 bg-border-primary rounded-full appearance-none cursor-pointer accent-accent"
+              />
+
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Subtle Progress Overlay */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/[0.02]">
-        <div className="h-full bg-white w-2/3 opacity-30 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
-      </div>
+      ) : (
+        <p className="text-[12px] text-text-muted">No song selected yet.</p>
+      )}
     </div>
   );
 };
+
 
 export default RoomPlayer;

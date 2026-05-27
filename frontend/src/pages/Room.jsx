@@ -8,8 +8,9 @@ import RoomPlayer from '../components/room/RoomPlayer.jsx';
 import { useParams } from 'react-router-dom';
 import useRoomStore from '../store/roomStore.js';
 import { useEffect } from 'react';
-import socket, { connectSocket, disconnectSocket, joinRoom, leaveRoom, } from '../socket/socket.js'
+import socket, { connectSocket, disconnectSocket, joinRoom, leaveRoom, syncPause, syncPlay, syncSkip } from '../socket/socket.js'
 import useAuthStore from '../store/authStore.js';
+
 import { getCurrentRoom } from '../services/room.service.js';
 import { getallSongs } from '../services/song.service.js';
 import usePlayerStore from '../store/playerStore.js';
@@ -23,17 +24,37 @@ const Room = () => {
   const {setQueue} = usePlayerStore();
   const {queue} = usePlayerStore();
    
-  const {currentTrack,isPlaying,progress,volume,setSong,setVolume,togglePlayPause} = usePlayerStore()
+  const {currentTrack,isPlaying,progress,volume,setSong,setVolume,togglePlayPause,setIsPlaying} = usePlayerStore()
   
- 
+ /*
+ verify current song or not 
+ if current song then check  duration and progress
+ now check playing or not if palying then pause it 
+ and if not playing then play it 
+ if current song false then set the song as current song and start the play 
+ */
   const handleSongs = (song)=>{
     const isCurrentSong = currentTrack?._id === song._id;
-    const isThisSongPlaying = isCurrentSong && isPlaying;
     if(isCurrentSong){
-      togglePlayPause()
+      const duration = currentTrack?.duration || 0;
+      const currentPosition = duration? (progress/100)*duration : 0;
+      if(isPlaying){
+        setIsPlaying(false)
+        syncPause(roomId,currentPosition);
+      }
+      else{
+        setIsPlaying(True)
+        if(currentTrack?.audio){
+          syncPlay(roomId,currentTrack.audio,currentPosition);
+        }
+      }
     }
     else {
       setSong(song);
+      if(song?.audio){
+        syncSkip(roomId,song.audio);
+
+      }
     }
   }
 

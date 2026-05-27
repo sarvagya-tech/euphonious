@@ -21,6 +21,10 @@ const usePlayerStore = create((set) => ({
   togglePlayPause: () => set((state) => ({ 
     isPlaying: !state.isPlaying 
   })),
+
+  setIsPlaying : (isPlaying) => set({
+    isPlaying: isPlaying
+  }),
   
   setProgress: (progress) => set({ 
     progress: progress 

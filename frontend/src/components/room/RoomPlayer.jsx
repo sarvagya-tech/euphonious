@@ -2,11 +2,12 @@
 import usePlayerStore from "../../store/playerStore";
 import useRoomStore from "../../store/roomStore";
 import usePlayer from "../hooks/usePlayer.js";
-
+import socket, { syncPause, syncPlay, syncSeek, syncSkip } from "../../socket/socket.js";
 
 
 const RoomPlayer = () => {
   const { howlRef, handleSeek } = usePlayer();
+  const { id: roomId } = useParams();
   
   const { 
     currentTrack, 
@@ -16,7 +17,8 @@ const RoomPlayer = () => {
     muted,
     togglePlayPause,
     setVolume,
-    toggleMute 
+    toggleMute ,
+    setIsPlaying
   } = usePlayerStore();
 
   
@@ -35,11 +37,49 @@ const RoomPlayer = () => {
     const x = e.clientX - rect.left;
     const percentage = (x / rect.width) * 100;
     handleSeek(percentage);
+    const currentPosition = howlRef.current?.seek() || 0;
+    syncSeek(roomId, currentPosition);
   };
 
     const handleVolume = (e)=>{
         setVolume(parseFloat(e.target.value))
       }
+      /*
+      find the current position because need it 
+      check if playing true the pause it
+      and if playing false then play it 
+      */
+      const handleTogglePlayPause = ()=>{
+         const currentPosition = howlRef.current?.seek() || 0; // why 
+         if(isPlaying){
+          setIsPlaying(false)
+          syncPause(roomId,currentPosition)
+         }
+         else{
+          setIsPlaying(true);
+          if(currentTrack?.audio){
+            syncPlay(roomId,currentTrack?.audio,currentPosition*1000)
+          }
+        }
+      };
+      const handleSkip = (direction)=>{
+        if(!queue?.lenth) return;
+        const currentIndex = queue.findIndex((song)=>song._id === currentTrack._id);
+        const safeIndex = currentIndex >= 0 ? currentIndex : 0 ;
+        let nextIndex = safeIndex;
+        if(direction === "next"){
+          nextIndex = (safeIndex+1) % queue.length;
+        }elseif(direction === "prev")
+        {
+          nextIndex = safeIndex === 0 ? queue.length - 1 : safeIndex -1;
+
+        } 
+        const nextSong = queue[nextIndex];
+        if (!nextSong) return;
+
+        setSong(nextSong);
+        syncSkip(roomId, nextSong.audio);
+       };
 
   return (
     <div className="premium-card p-4 md:p-5">
@@ -70,13 +110,19 @@ const RoomPlayer = () => {
 
           <div className="space-y-2.5">
             <div className="flex items-center justify-center gap-3">
-              <button type="button" className="w-8 h-8 rounded-md border border-border-primary text-text-muted hover:text-text-primary hover:border-border-hover transition-colors flex items-center justify-center">
+              <button 
+              type="button" 
+              onClick={()=>handleSkip("prev")}
+              className="w-8 h-8 rounded-md border border-border-primary text-text-muted hover:text-text-primary hover:border-border-hover transition-colors flex items-center justify-center">
                 <span className="material-symbols-rounded text-lg">skip_previous</span>
               </button>
               <button type="button" className="w-10 h-10 rounded-full bg-accent text-bg-primary shadow-accent-glow flex items-center justify-center" onClick={togglePlayPause}>
                 <span className="material-symbols-rounded text-xl">{isPlaying ? "pause" : 'play_arrow'}</span>
               </button>
-              <button type="button" className="w-8 h-8 rounded-md border border-border-primary text-text-muted hover:text-text-primary hover:border-border-hover transition-colors flex items-center justify-center">
+              <button 
+              type="button" 
+              onClick={()=>handleSkip("next")}
+               className="w-8 h-8 rounded-md border border-border-primary text-text-muted hover:text-text-primary hover:border-border-hover transition-colors flex items-center justify-center">
                 <span className="material-symbols-rounded text-lg">skip_next</span>
               </button>
             </div>

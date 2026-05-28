@@ -11,7 +11,7 @@ const Profile = () => {
     <div className="bg-bg-primary min-h-screen flex text-text-primary selection:bg-accent/20">
       <Sidebar />
       
-      <main className="flex-1 ml-sidebar-width h-screen overflow-y-auto custom-scrollbar relative pt-16 pb-32">
+      <main className="flex-1 md:ml-sidebar-width h-screen overflow-y-auto custom-scrollbar relative pt-16 pb-32">
         <Navbar />
 
         <div className="p-10">

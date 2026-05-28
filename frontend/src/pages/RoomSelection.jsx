@@ -64,7 +64,7 @@ const RoomSelection = () => {
     <div className="bg-bg-primary min-h-screen flex selection:bg-accent/20 text-text-primary">
       <Sidebar />
 
-      <main className="flex-1 ml-sidebar-width h-screen overflow-y-auto custom-scrollbar flex flex-col relative pt-16">
+      <main className="flex-1 md:ml-sidebar-width h-screen overflow-y-auto custom-scrollbar flex flex-col relative pt-16">
         <Navbar />
 
         <div className="flex-1 flex flex-col items-center justify-center p-10 pb-32">

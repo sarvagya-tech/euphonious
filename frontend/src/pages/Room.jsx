@@ -122,7 +122,7 @@ const Room = () => {
     <div className="bg-bg-primary min-h-screen flex text-text-primary selection:bg-accent/20">
       <Sidebar />
 
-      <main className="flex-1 ml-sidebar-width h-screen flex flex-col relative pt-16">
+      <main className="flex-1 md:ml-sidebar-width h-screen flex flex-col relative pt-16">
         <Navbar />
 
         <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 pb-36">

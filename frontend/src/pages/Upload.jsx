@@ -56,7 +56,7 @@ const Upload = () => {
 
       <Sidebar />
 
-      <main className="flex-1 ml-sidebar-width h-screen overflow-y-auto custom-scrollbar relative pt-16 pb-32">
+      <main className="flex-1 md:ml-sidebar-width h-screen overflow-y-auto custom-scrollbar relative pt-16 pb-32">
         <Navbar />
 
         <div className="p-10 max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">

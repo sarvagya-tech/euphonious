@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import useUiStore from '../../store/uiStore';
 
 const Sidebar = () => {
   const location = useLocation();
+  const { isSidebarOpen, closeSidebar } = useUiStore();
   const isActive = (path) => location.pathname === path;
 
   const navItems = [
@@ -20,7 +22,28 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-sidebar-width bg-bg-primary border-r border-border-primary flex flex-col p-6 pb-28 z-40 overflow-hidden">
+    <>
+      <div
+        className={`fixed inset-0 bg-black/60 z-40 transition-opacity duration-300 md:hidden ${
+          isSidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={closeSidebar}
+      />
+
+      <aside
+        className={`fixed left-0 top-0 h-full w-sidebar-width bg-bg-primary border-r border-border-primary flex flex-col p-6 pb-28 z-50 overflow-hidden transform transition-transform duration-300 ease-out ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        }`}
+      >
+        <button
+          type="button"
+          onClick={closeSidebar}
+          className="md:hidden absolute top-4 right-4 w-9 h-9 rounded-full border border-border-primary bg-bg-card flex items-center justify-center text-text-muted"
+          aria-label="Close navigation menu"
+        >
+          <span className="material-symbols-rounded text-xl">close</span>
+        </button>
+
       {/* Logo */}
       <div className="mb-10 flex items-center gap-3">
         <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center shadow-accent-glow">
@@ -63,7 +86,8 @@ const Sidebar = () => {
           <span className="text-[11px] font-bold tracking-wider uppercase">Create Playlist</span>
         </button>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 };
 

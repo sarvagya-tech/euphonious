@@ -16,7 +16,7 @@ const Playlist = () => {
     <div className="bg-black min-h-screen flex selection:bg-white/10">
       <Sidebar />
       
-      <main className="flex-1 ml-[260px] h-screen overflow-y-auto custom-scrollbar relative pb-40">
+      <main className="flex-1 md:ml-sidebar-width h-screen overflow-y-auto custom-scrollbar relative pb-40">
         <Navbar />
         
         {/* Minimal Header */}

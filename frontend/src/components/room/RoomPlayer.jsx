@@ -3,11 +3,14 @@ import usePlayerStore from "../../store/playerStore";
 import useRoomStore from "../../store/roomStore";
 import usePlayer from "../hooks/usePlayer.js";
 import socket, { syncPause, syncPlay, syncSeek, syncSkip } from "../../socket/socket.js";
+import { useEffect } from "react";
+import { useParams } from 'react-router-dom'
 
 
 const RoomPlayer = () => {
   const { howlRef, handleSeek } = usePlayer();
   const { id: roomId } = useParams();
+  
   
   const { 
     currentTrack, 
@@ -18,8 +21,61 @@ const RoomPlayer = () => {
     togglePlayPause,
     setVolume,
     toggleMute ,
-    setIsPlaying
+    setIsPlaying,
+    queue,
+    setSong
   } = usePlayerStore();
+
+  useEffect(()=>{
+    const onPlaySong = (data)=>{
+    const song = queue.find((item)=>item.audio === data.songUrl)
+    
+    if(!song)return
+    setSong(song);
+    isPlaying(true);
+    const syncedPosition = Math.max(0,(Date.now()- data.startedAt)/1000);
+
+    setTimeout(()=>{
+      if(howlRef.current && howlRef.current.state === "loaded"){
+        howlRef.current.seek(syncedPosition);
+      }
+    },120) 
+  };
+  
+  const onPauseSong = (data)=>{
+    if(howlRef.current && howlRef.current.state === "loaded"){
+      howlRef.current.seek(data.position || 0);
+      howlRef.current.pause();
+    }
+    setIsPlaying(false);
+  };
+
+  const onSeekSong = (data)=>{
+    if(howlRef.current && howlRef.current.state === "loaded"){
+      howlRef.current.seek(data.position || 0);
+    }
+  }
+
+  const onSkipSong = (data)=>{
+    if(currentTrack?.audio === data.songUrl) return;
+    const song = queue.find((item)=>item.audio === data.songUrl);
+    if(!song)return;
+    setSong(song);
+
+  }
+  socket.on("playSong",onPlaySong);
+  socket.on("pauseSong",onPauseSong);
+  socket.on("skipSong",onSkipSong);
+  socket.on("seekSong",onSeekSong);
+
+  return ()=>{
+    socket.off("playSong",onPlaySong);
+    socket.off("pauseSong",onPauseSong);
+    socket.off("skipSong",onSkipSong);
+    socket.off("seekSong",onSeekSong);
+  }
+
+  },[queue,setSong,currentTrack?.audio,howlRef])
 
   
   if (!currentTrack) return null;

@@ -7,8 +7,17 @@ const usePlayerStore = create((set) => ({
   queue: [],
   volume: 0.4,
   muted: false,
+  recentlyPlayed: [],
 
   // Actions
+  
+
+   setRecentlyPlayed: (songs) => set((state)=>({...state, recentlyPlayed: [...state.recentlyPlayed,...songs]})),
+      // set({
+      //    recentlyPlayed: songs
+      // }),
+
+
   setSong: (song) => set({ 
     currentTrack: song, 
     isPlaying: !!song 

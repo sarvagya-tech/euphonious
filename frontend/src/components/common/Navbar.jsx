@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import useAuthStore from '../../store/authStore';
 
 const Navbar = () => {
+  const {user} = useAuthStore();
   return (
     <header className="fixed top-0 left-sidebar-width right-0 h-16 bg-bg-primary/80 backdrop-blur-xl border-b border-border-primary z-40 px-10 flex items-center justify-between">
       {/* Search Bar */}
@@ -23,11 +25,11 @@ const Navbar = () => {
         </button>
         <Link to="/profile" className="flex items-center gap-3 p-1 pr-3 bg-bg-card border border-border-primary rounded-full hover:border-border-hover transition-all group">
           <img 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6HEJqSJt35iAyy7vzNae-foAiHsy-AnKFuOQyr7UFrGyEZZ2Mo6YixiwQyXh50o7Q3bjCvclOpsddhqaoXqkOaoQRx6vQtBvNoLW5HZKzrQUQojTHPJLhpQhWM5WY0DPAUDSkWSXrZLDN0gHvepj8pgn1znA3l9bv8n_No0Y152W6BhQHuHe8ybH599VfIKR2FNqxXHxaxQ-Lq96TkZWYpZmzh0mMEZSGioukw7LyLfNy4B-CU13J6ep9vNn6qbBGDAr3jBinxnlL" 
+            src= {user.avatar} 
             className="w-8 h-8 rounded-full border border-border-primary group-hover:border-accent/40 transition-all" 
             alt="" 
           />
-          <span className="text-[12px] font-bold text-text-primary">Alex Volkov</span>
+          <span className="text-[12px] font-bold text-text-primary">{user.fullname}</span>
           <span className="material-symbols-rounded text-lg text-text-muted">expand_more</span>
         </Link>
       </div>

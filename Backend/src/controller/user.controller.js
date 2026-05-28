@@ -118,16 +118,17 @@ const createdUser = await User.findById(user._id).select(
         
         const loggedInuser = await User.findById(user._id).select("-password -refreshToken")
 
-        const options = {
+        const isProduction = process.env.NODE_ENV === 'production';
+        const cookieOptions = {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
+                secure: isProduction,
+                sameSite: isProduction ? 'none' : 'lax',
         };
 
         return res
         .status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
+        .cookie("accessToken", accessToken, cookieOptions)
+        .cookie("refreshToken", refreshToken, cookieOptions)
         .json(
                 new ApiResponse(
                         200,
@@ -150,16 +151,17 @@ const createdUser = await User.findById(user._id).select(
         }
         );
 
-        const options = {
+        const isProduction = process.env.NODE_ENV === 'production';
+        const cookieOptions = {
                 httpOnly : true,
-                secure : process.env.NODE_ENV === "production",
-                sameSite: "lax",
+                secure : isProduction,
+                sameSite: isProduction ? "none" : "lax",
         }
 
         return res
         .status(200)
-        .clearCookie("accessToken",options)
-        .clearCookie("refreshToken",options)
+        .clearCookie("accessToken",cookieOptions)
+        .clearCookie("refreshToken",cookieOptions)
         .json(new ApiResponse(200,{},"user logged out"))
 
      });

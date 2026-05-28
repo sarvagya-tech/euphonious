@@ -9,9 +9,13 @@ import { initializeSocket } from './socket/socket.js'
 import { Server } from 'socket.io'
 import { createServer } from 'http'
 const httpServer = createServer(app)
+const clientOrigins = (process.env.CLIENT_URLS || "http://localhost:5173")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean)
 const io = new Server(httpServer, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: clientOrigins,
         methods: ["GET", "POST"],
         credentials: true
     }

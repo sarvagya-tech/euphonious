@@ -26,7 +26,7 @@ const Sidebar = () => {
         <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center shadow-accent-glow">
           <span className="material-symbols-rounded text-bg-primary text-xl font-bold">waves</span>
         </div>
-        <span className="text-xl font-bold tracking-tighter text-text-primary mono-text">AURA</span>
+        <span className="text-xl font-bold tracking-tighter text-text-primary mono-text">Groovio</span>
       </div>
 
       {/* Main Nav */}

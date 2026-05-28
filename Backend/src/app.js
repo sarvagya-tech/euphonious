@@ -8,9 +8,14 @@ import playlistRouter from './routes/playlist.routes.js'
 
 const app = express()
 
+const clientOrigins = (process.env.CLIENT_URLS || 'http://localhost:5173')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+
 app.use(cookieparser())
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: clientOrigins,
     credentials: true
 }))
 app.use(express.json())

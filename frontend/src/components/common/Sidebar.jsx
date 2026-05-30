@@ -44,48 +44,48 @@ const Sidebar = () => {
           <span className="material-symbols-rounded text-xl">close</span>
         </button>
 
-      {/* Logo */}
-      <div className="mb-10 flex items-center gap-3">
-        <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center shadow-accent-glow">
-          <span className="material-symbols-rounded text-bg-primary text-xl font-bold">waves</span>
+        {/* Logo */}
+        <div className="mb-10 flex items-center gap-3">
+          <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center shadow-accent-glow">
+            <span className="material-symbols-rounded text-bg-primary text-xl font-bold">waves</span>
+          </div>
+          <span className="text-xl font-bold tracking-tighter text-text-primary mono-text">Groovio</span>
         </div>
-        <span className="text-xl font-bold tracking-tighter text-text-primary mono-text">Groovio</span>
-      </div>
 
-      {/* Main Nav */}
-      <nav className="space-y-1 mb-10">
-        {navItems.map((item) => (
-          <Link
-            key={item.path}
-            to={item.path}
-            className={`nav-item ${isActive(item.path) ? 'nav-item-active' : ''}`}
-          >
-            <span className="material-symbols-rounded text-2xl">{item.icon}</span>
-            <span className="text-[13px] font-medium">{item.label}</span>
-          </Link>
-        ))}
-      </nav>
-
-      {/* Playlists */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar -mx-2 px-2">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-6 px-4">Your Playlists</p>
-        <div className="space-y-1">
-          {playlists.map((pl, i) => (
-            <div key={i} className="flex items-center gap-4 py-2 px-4 rounded-md hover:bg-white/5 transition-all cursor-pointer group">
-              <img src={pl.thumb} className="w-8 h-8 rounded bg-bg-card border border-border-primary group-hover:border-border-hover transition-all" alt="" />
-              <span className="text-[13px] font-medium text-text-muted group-hover:text-text-primary truncate transition-colors">{pl.name}</span>
-            </div>
+        {/* Main Nav */}
+        <nav className="space-y-1 mb-10">
+          {navItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`nav-item ${isActive(item.path) ? 'nav-item-active' : ''}`}
+            >
+              <span className="material-symbols-rounded text-2xl">{item.icon}</span>
+              <span className="text-[13px] font-medium">{item.label}</span>
+            </Link>
           ))}
-        </div>
-      </div>
+        </nav>
 
-      {/* Bottom Action */}
-      <div className="mt-6 pt-6 border-t border-border-primary">
-        <button className="w-full bg-bg-card border border-border-primary hover:border-accent hover:text-accent transition-all duration-300 py-3.5 rounded-md flex items-center justify-center gap-3 group active:scale-95 shadow-premium">
-          <span className="material-symbols-rounded text-xl group-hover:scale-110 transition-transform">add</span>
-          <span className="text-[11px] font-bold tracking-wider uppercase">Create Playlist</span>
-        </button>
-      </div>
+        {/* Playlists */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar -mx-2 px-2">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-6 px-4">Your Playlists</p>
+          <div className="space-y-1">
+            {playlists.map((pl, i) => (
+              <div key={i} className="flex items-center gap-4 py-2 px-4 rounded-md hover:bg-white/5 transition-all cursor-pointer group">
+                <img src={pl.thumb} className="w-8 h-8 rounded bg-bg-card border border-border-primary group-hover:border-border-hover transition-all" alt="" />
+                <span className="text-[13px] font-medium text-text-muted group-hover:text-text-primary truncate transition-colors">{pl.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom Action */}
+        <div className="mt-6 pt-6 border-t border-border-primary">
+          <Link to="/playlist/create" className="w-full bg-bg-card border border-border-primary hover:border-accent hover:text-accent transition-all duration-300 py-3.5 rounded-md flex items-center justify-center gap-3 group active:scale-95 shadow-premium">
+            <span className="material-symbols-rounded text-xl group-hover:scale-110 transition-transform">add</span>
+            <span className="text-[11px] font-bold tracking-wider uppercase">Create Playlist</span>
+          </Link>
+        </div>
       </aside>
     </>
   );

@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Search from './pages/Search';
 import Profile from './pages/Profile';
 import Playlist from './pages/Playlist';
+import CreatePlaylist from './pages/CreatePlaylist';
 import Room from './pages/Room';
 import RoomSelection from './pages/RoomSelection';
 import Upload from './pages/Upload';
@@ -34,6 +35,7 @@ function App() {
         <Route path="/search" element={<Search />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/playlist" element={<Playlist />} />
+        <Route path="/playlist/create" element={<CreatePlaylist />} />
         <Route path="/room" element={<RoomSelection />} />
         <Route path="/room/:id" element={<Room />} />
         <Route path="/upload" element={<Upload />} />

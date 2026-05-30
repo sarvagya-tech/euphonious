@@ -18,6 +18,12 @@ const createPlaylist = asynchandler(async (req, res) => {
     }
     const userId = req.user._id;
 
+    const songs = JSON.parse(req.body.songs);
+    if(!songs){
+        throw new ApiError(400,"songs are required");
+    }
+
+
 
 
     const coverlocalPath = req.files?.coverImage?.[0]?.path;
@@ -35,7 +41,7 @@ const createPlaylist = asynchandler(async (req, res) => {
     const playlist = await Playlist.create({
         name,
         coverImage: coverImage.url,
-        songs: [],
+        songs: songs,
         user: userId
 
     })

@@ -1,40 +1,88 @@
 import React, { useState } from 'react';
 import Sidebar from '../components/common/Sidebar';
 import Navbar from '../components/common/Navbar';
+import { useEffect } from 'react';
+import { getallSongs } from '../services/song.service';
+import { createplaylistService } from '../services/playlist.service';
+import toast from 'react-hot-toast';
 
-const availableSongs = [
-  {
-    _id: '1',
-    title: 'Neon Dreams',
-    artist: 'Synthwave Boy',
-    genre: 'Synthwave',
-    coverimage: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=200',
-  },
-  {
-    _id: '2',
-    title: 'Midnight Pulse',
-    artist: 'Neon Circuit',
-    genre: 'Electronic',
-    coverimage: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=200',
-  },
-  {
-    _id: '3',
-    title: 'Electric Echoes',
-    artist: 'Digital Void',
-    genre: 'Ambient',
-    coverimage: 'https://images.unsplash.com/photo-1459749411177-042180ce673c?auto=format&fit=crop&q=80&w=200',
-  },
-  {
-    _id: '4',
-    title: 'Solar Wind',
-    artist: 'Astro',
-    genre: 'Chill',
-    coverimage: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=200',
-  },
-];
+// const availableSongs = [
+//   {
+//     _id: '1',
+//     title: 'Neon Dreams',
+//     artist: 'Synthwave Boy',
+//     genre: 'Synthwave',
+//     coverimage: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=200',
+//   },
+//   {
+//     _id: '2',
+//     title: 'Midnight Pulse',
+//     artist: 'Neon Circuit',
+//     genre: 'Electronic',
+//     coverimage: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=200',
+//   },
+//   {
+//     _id: '3',
+//     title: 'Electric Echoes',
+//     artist: 'Digital Void',
+//     genre: 'Ambient',
+//     coverimage: 'https://images.unsplash.com/photo-1459749411177-042180ce673c?auto=format&fit=crop&q=80&w=200',
+//   },
+//   {
+//     _id: '4',
+//     title: 'Solar Wind',
+//     artist: 'Astro',
+//     genre: 'Chill',
+//     coverimage: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=200',
+//   },
+// ];
 
 const CreatePlaylist = () => {
   const [selectedSongs, setSelectedSongs] = useState([]);
+  const [availableSongs,setAvailableSongs] = useState([]);
+  const [name,setName] = useState("");
+  const[coverImagefile,setCoverImageFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e)=>{
+     e.preventDefault();
+    const formData = new FormData();
+    formData.append("name",name);
+    formData.append("coverImage",coverImagefile);
+    formData.append("songs",JSON.stringify(selectedSongs));
+    try {
+      setLoading(true);
+      const response = await createplaylistService(formData);
+      if(response && response.status === 200){
+        toast.success("playlist created succesfully");
+        setName("");
+        setCoverImageFile(null);
+        setSelectedSongs("");
+      }
+      else{
+        toast.error("failed to create playlist")
+      }
+      setLoading(false);
+      
+    } catch (error) {
+      console.log("error",error);
+      toast.error("failed to create playlist");
+      setLoading(false);
+      
+    }
+
+
+
+  }
+
+  useEffect(()=>{
+    getallSongs().then((data)=>{
+      if(data && data.data){
+          setAvailableSongs(data.data);
+      }
+
+    })
+      },[])
 
   const toggleSong = (songId) => {
     setSelectedSongs((current) =>
@@ -67,6 +115,8 @@ const CreatePlaylist = () => {
                     </label>
                     <input
                       type="text"
+                      value={name}
+                      onChange={(e)=>setName(e.target.value)}
                       placeholder="Enter playlist name"
                       className="w-full bg-bg-secondary border border-border-primary rounded-md px-4 py-3 text-sm focus:outline-none focus:border-accent transition-all text-text-primary placeholder:text-text-muted/50 focus:shadow-[0_0_15px_rgba(200,245,90,0.1)]"
                     />
@@ -82,7 +132,12 @@ const CreatePlaylist = () => {
                       </div>
                       <p className="text-sm font-bold text-text-primary mb-1">Upload Playlist Cover</p>
                       <p className="text-[11px] text-text-muted uppercase tracking-wider">JPEG, PNG, WEBP</p>
-                      <input type="file" className="hidden" accept="image/*" />
+                      <input 
+                      
+                      onChange={(e)=>setCoverImageFile(e.target.files[0])}
+                      type="file" 
+                      className="hidden"
+                       accept="image/*" />
                     </label>
                   </div>
                 </div>
@@ -146,12 +201,14 @@ const CreatePlaylist = () => {
           <div className="mt-8 flex justify-end">
             <button
               type="button"
+              disabled={loading}
+              onClick={handleSubmit}
               className="bg-accent text-bg-primary font-bold py-3.5 px-8 rounded-full hover:scale-[1.02] active:scale-95 transition-all shadow-accent-glow flex items-center gap-2 group"
             >
-              <span className="material-symbols-rounded group-hover:-translate-y-1 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>
+              {loading ? <><span className= "material-symbols-rounded animate-spin">autorenew</span>Creating...</> : <><span className="material-symbols-rounded group-hover:-translate-y-1 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>
                 playlist_add
-              </span>
-              Create Playlist
+              </span>Create Playlist</>}
+              
             </button>
           </div>
         </div>

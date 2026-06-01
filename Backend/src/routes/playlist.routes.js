@@ -4,7 +4,8 @@ import {
     getPlaylist,
     addSongs,
     deleteSong,
-    deletePlaylist
+    deletePlaylist,
+    getPlaylistById
 } from "../controller/playlist.controller.js";
 import { upload } from "../middleware/mullter.middleware.js";
 import { verifyJwt } from "../middleware/Auth.middleware.js";
@@ -14,20 +15,18 @@ const playlistRouter = Router();
 // All playlist routes require authentication
 playlistRouter.use(verifyJwt);
 
-playlistRouter.route("/create").post(
-    upload.fields([
-        {
-            name: "coverImage",
-            maxCount: 1,
-        }
-    ]),
-    createPlaylist
-);
+playlistRouter.post('/create', upload.fields([
+    {
+        name: "coverImage",
+        maxCount: 1,
+    }
+]), createPlaylist);
 
-playlistRouter.route("/get").get(getPlaylist);
+playlistRouter.get('/get',verifyJwt,getPlaylist);
+playlistRouter.get('/get/:playlistId',verifyJwt,getPlaylistById);
 
-playlistRouter.route("/add/:playlistId/:songId").post(addSongs);
-playlistRouter.route("/remove/:playlistId/:songId").patch(deleteSong);
-playlistRouter.route("/:playlistId").delete(deletePlaylist);
+playlistRouter.post('/add/:playlistId/:songId',verifyJwt, addSongs);
+playlistRouter.patch('/remove/:playlistId/:songId', verifyJwt, deleteSong);
+playlistRouter.delete('/:playlistId', verifyJwt, deletePlaylist);
 
 export default playlistRouter;

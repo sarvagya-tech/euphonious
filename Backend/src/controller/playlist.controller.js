@@ -65,6 +65,19 @@ const getPlaylist = asynchandler(async (req, res) => {
 
 })
 
+const getPlaylistById = asynchandler(async (req, res) => {
+    const { playlistId } = req.params;
+
+    const playlist = await Playlist.findById(playlistId)
+    .populate("songs");
+    if (!playlist) {
+        throw new ApiError(404, "playlist not found");
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, playlist, "playlist found")
+    );
+});
 
 const addSongs = asynchandler(async (req, res) => {
     //take song id and playlist is from params
@@ -151,5 +164,5 @@ const deletePlaylist = asynchandler(async (req, res) => {
 })
 
 
-export { createPlaylist, getPlaylist, addSongs, deleteSong, deletePlaylist };
+export { createPlaylist, getPlaylist, addSongs, deleteSong, deletePlaylist, getPlaylistById };
 

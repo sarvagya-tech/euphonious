@@ -1,25 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import useUiStore from '../../store/uiStore';
+import { getPlaylist } from '../../services/playlist.service';
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const location = useLocation();
   const { isSidebarOpen, closeSidebar } = useUiStore();
   const isActive = (path) => location.pathname === path;
+  const[playlists,setPlaylists] = useState([])
+  const navigate = useNavigate();
 
   const navItems = [
     { label: 'Home', icon: 'home', path: '/home' },
     { label: 'Search', icon: 'search', path: '/search' },
-    { label: 'Your Library', icon: 'library_music', path: '/playlist' },
+    
     { label: 'Rooms', icon: 'sensors', path: '/room' },
     { label: 'Upload', icon: 'cloud_upload', path: '/upload' },
   ];
 
-  const playlists = [
-    { name: 'Midnight Chill', thumb: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=100' },
-    { name: 'Coding Focus', thumb: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=100' },
-    { name: 'Techno 2024', thumb: 'https://images.unsplash.com/photo-1459749411177-042180ce673c?auto=format&fit=crop&q=80&w=100' },
-  ];
+
+ useEffect(()=>{
+ getPlaylist().then((data)=>{
+  
+      if(data && data.data){
+       
+        setPlaylists(data.data.data);
+      }
+ })
+  
+ },[])
+ 
+  
 
   return (
     <>
@@ -71,8 +83,11 @@ const Sidebar = () => {
           <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-6 px-4">Your Playlists</p>
           <div className="space-y-1">
             {playlists.map((pl, i) => (
-              <div key={i} className="flex items-center gap-4 py-2 px-4 rounded-md hover:bg-white/5 transition-all cursor-pointer group">
-                <img src={pl.thumb} className="w-8 h-8 rounded bg-bg-card border border-border-primary group-hover:border-border-hover transition-all" alt="" />
+              
+              <div key={i} 
+               onClick={() => navigate(`/playlist/${pl._id}`)}
+              className="flex items-center gap-4 py-2 px-4 rounded-md hover:bg-white/5 transition-all cursor-pointer group">
+                <img src={pl.coverImage} className="w-8 h-8 rounded bg-bg-card border border-border-primary group-hover:border-border-hover transition-all" alt="" />
                 <span className="text-[13px] font-medium text-text-muted group-hover:text-text-primary truncate transition-colors">{pl.name}</span>
               </div>
             ))}

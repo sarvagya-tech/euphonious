@@ -25,6 +25,14 @@ const getPlaylist = async () => {
         console.log("error in getting the playlist ", error);
     }
 }
+const getPlaylistById = async (playlistId) => {
+    try {
+        const playlist = await api.get(`/playlists/get/${playlistId}`)
+        return playlist;
+    } catch (error) {
+        console.log("error in getting the playlist by id ", error);
+    }
+}
 
 const addSongs = async (playlistId, songId) => {
     try {
@@ -53,4 +61,4 @@ const deletePlaylist = async (playlistId) => {
         console.log("error in deleting the playlist ", error);
     }
 }
-export { createplaylistService, getPlaylist, addSongs, removeSong, deletePlaylist }
+export { createplaylistService, getPlaylist, getPlaylistById, addSongs, removeSong, deletePlaylist }

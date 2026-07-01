@@ -30,7 +30,7 @@ const ChatBox = () => {
         </div>
         <div className="flex items-center gap-2 px-2 py-1 bg-accent/10 rounded-md border border-accent/20">
           <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse shadow-accent-glow"></div>
-          <span className="text-[10px] font-bold text-accent mono-text uppercase">Sync Active</span>
+          <span className="text-[10px] font-bold text-accent mono-text uppercase">Active</span>
         </div>
       </div>
 

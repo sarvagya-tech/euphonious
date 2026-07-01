@@ -27,7 +27,7 @@ const Playlist = () => {
     fetchPlaylist();
   }, [playlistId]);
 
-  const songs = playlist?.songs;
+  const songs = playlist?.songs ?? [];
    
 
   return (
@@ -77,10 +77,10 @@ const Playlist = () => {
                 <div className="flex items-center gap-4 text-zinc-600">
                   <span className="text-[13px] font-medium flex items-center gap-2">
                     <span className="material-symbols-rounded text-sm">music_note</span>{' '}
-                    {playlist?.songs?.length ?? songs.length} Tracks
+                    {songs.length} Tracks
                   </span>
                   <span className="text-[13px] font-medium flex items-center gap-2">
-                    <span className="material-symbols-rounded text-sm">schedule</span> 45m
+                    <span className="material-symbols-rounded text-sm">schedule</span>
                   </span>
                 </div>
               </div>

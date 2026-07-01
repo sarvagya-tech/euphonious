@@ -171,7 +171,7 @@ const RoomSelection = () => {
               </button>
 
               <h1 className="text-4xl font-bold text-white tracking-tighter mb-4 flex items-center gap-4">
-                JOIN TRANSMISSION
+                JOIN THE ROOM
               </h1>
               <p className="text-text-muted font-medium text-sm mb-12 flex items-start gap-3">
                 <span className="material-symbols-rounded text-accent mt-0.5 text-[18px]">key</span>
@@ -183,6 +183,15 @@ const RoomSelection = () => {
                   <label className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] ml-1 flex items-center gap-2 group-focus-within:text-accent transition-colors">
                     <span className="material-symbols-rounded text-[14px]">password</span> Access Code
                   </label>
+                   <input
+                   type="text" 
+                   required
+                   className="w-full bg-bg-secondary border border-border-primary rounded-xl py-5 px-6 text-center text-white text-3xl tracking-[0.5em] font-mono font-bold outline-none focus:border-accent focus:bg-white/[0.03] transition-all placeholder-zinc-800 "
+                   placeholder="Paste room ID from host"
+                   value={joinRoomId}
+                   onChange={(e) => setJoinRoomId(e.target.value)}
+
+                  />
                   <input
                     required
                     className="w-full bg-bg-secondary border border-border-primary rounded-xl py-5 px-6 text-center text-white text-3xl tracking-[0.5em] font-mono font-bold outline-none focus:border-accent focus:bg-white/[0.03] transition-all placeholder-zinc-800 uppercase"
@@ -192,15 +201,7 @@ const RoomSelection = () => {
                     value={code}
                     onChange={(e) => setCode(e.target.value.toUpperCase())}
                   />
-                  <input
-                   type="text" 
-                   required
-                   className="w-full bg-bg-secondary border border-border-primary rounded-xl py-5 px-6 text-center text-white text-3xl tracking-[0.5em] font-mono font-bold outline-none focus:border-accent focus:bg-white/[0.03] transition-all placeholder-zinc-800 "
-                   placeholder="Paste room ID from host"
-                   value={joinRoomId}
-                   onChange={(e) => setJoinRoomId(e.target.value)}
-
-                  />
+                 
                 </div>
 
                 <button type="submit" className="w-full bg-white text-bg-primary font-bold py-4 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all text-sm tracking-widest uppercase flex items-center justify-center gap-3">

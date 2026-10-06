@@ -1,4 +1,5 @@
 import React from 'react';
+import { Play, Music, Heart } from 'lucide-react';
 import usePlayerStore from '../../store/playerStore.js';
 
 const getTrackKey = (track) => {
@@ -67,12 +68,7 @@ const PlaylistSongRow = ({ index, song }) => {
                 <div className="w-0.5 rounded-full bg-accent animate-[bounce_0.7s_infinite]"></div>
               </div>
             ) : isCurrentSong ? (
-              <span
-                className="material-symbols-rounded text-[20px]"
-                style={{ fontVariationSettings: "'FILL' 1" }}
-              >
-                play_arrow
-              </span>
+              <Play className="w-5 h-5 fill-current ml-0.5" />
             ) : (
               <span className="mono-text text-[12px] font-medium">{index}</span>
             )}
@@ -91,9 +87,7 @@ const PlaylistSongRow = ({ index, song }) => {
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-white/[0.05] to-white/[0.01]">
-                <span className="material-symbols-rounded text-text-muted text-2xl">
-                  music_note
-                </span>
+                <Music className="w-6 h-6 text-text-muted" />
               </div>
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-70" />
@@ -139,12 +133,7 @@ const PlaylistSongRow = ({ index, song }) => {
             className="hidden h-10 w-10 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.03] text-text-muted opacity-0 transition-all duration-300 hover:border-accent/20 hover:bg-accent/10 hover:text-accent group-hover:opacity-100 md:flex"
             aria-label={`Like ${song.title}`}
           >
-            <span
-              className="material-symbols-rounded text-[20px]"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              favorite
-            </span>
+            <Heart className="w-4 h-4" />
           </button>
 
           <div className="text-right">

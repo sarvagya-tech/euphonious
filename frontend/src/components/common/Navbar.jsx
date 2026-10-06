@@ -1,47 +1,84 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, Search, Bell, ChevronDown, Sparkles } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import useUiStore from '../../store/uiStore';
 
 const Navbar = () => {
-  const {user} = useAuthStore();
+  const { user } = useAuthStore();
   const { toggleSidebar } = useUiStore();
+  const navigate = useNavigate();
+
   return (
-    <header className="fixed top-0 left-0 md:left-sidebar-width right-0 h-16 bg-bg-primary/80 backdrop-blur-xl border-b border-border-primary z-40 px-4 md:px-10 flex items-center justify-between gap-4">
+    <header className="fixed top-0 left-0 md:left-sidebar-width right-0 h-16 glass-nav z-40 px-4 md:px-8 flex items-center justify-between gap-4 transition-all duration-300">
+      {/* Mobile Sidebar Toggle */}
       <button
         type="button"
         onClick={toggleSidebar}
-        className="md:hidden w-10 h-10 rounded-md border border-border-primary bg-bg-card flex items-center justify-center text-text-primary"
+        className="md:hidden w-10 h-10 rounded-xl border border-white/10 bg-white/[0.04] flex items-center justify-center text-text-primary hover:text-accent hover:border-accent/40 active:scale-95 transition-all"
         aria-label="Open navigation menu"
       >
-        <span className="material-symbols-rounded text-2xl">menu</span>
+        <Menu className="w-5 h-5" />
       </button>
 
-      {/* Search Bar */}
-      <div className="flex-1 max-w-lg hidden sm:block">
-        <div className="relative group">
-          <span className="material-symbols-rounded absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent transition-colors">search</span>
+      {/* Global Search Bar with Keyboard Shortcut */}
+      <div className="flex-1 max-w-md hidden sm:block">
+        <div 
+          onClick={() => navigate('/search')}
+          className="relative group cursor-pointer"
+        >
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted group-hover:text-accent transition-colors" />
           <input 
             type="text" 
-            placeholder="Search artists, songs, or podcasts" 
-            className="w-full bg-bg-card border border-border-primary rounded-md py-2.5 pl-10 pr-4 text-[13px] font-medium text-text-primary outline-none focus:border-border-hover focus:bg-bg-secondary transition-all placeholder-text-muted" 
+            placeholder="Search songs, artists, genres..." 
+            onFocus={() => navigate('/search')}
+            className="w-full bg-white/[0.03] border border-white/[0.08] hover:border-white/15 focus:border-accent/50 focus:bg-white/[0.06] rounded-xl py-2 pl-10 pr-12 text-[13px] font-medium text-text-primary outline-none transition-all placeholder:text-text-muted/60 shadow-inner" 
           />
+          <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-white/[0.06] border border-white/[0.08] px-1.5 py-0.5 rounded text-[10px] font-mono text-text-muted">
+            <span>/</span>
+          </div>
         </div>
       </div>
 
-      {/* User Area */}
-      <div className="flex items-center gap-3 md:gap-6">
-        <button className="text-text-muted hover:text-text-primary transition-colors">
-          <span className="material-symbols-rounded text-2xl">notifications</span>
+      {/* Right Controls Area */}
+      <div className="flex items-center gap-3 md:gap-5">
+        
+        {/* Quick Ambient Live Indicator */}
+        <Link 
+          to="/room" 
+          className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 hover:bg-accent/20 transition-all text-accent text-xs font-bold shadow-accent-glow"
+        >
+          <span className="w-2 h-2 rounded-full bg-accent animate-ping"></span>
+          <span>Live Rooms</span>
+        </Link>
+
+        {/* Notifications */}
+        <button 
+          type="button"
+          className="relative w-9 h-9 rounded-xl border border-white/10 bg-white/[0.03] flex items-center justify-center text-text-muted hover:text-text-primary hover:border-white/20 transition-all active:scale-95"
+          aria-label="Notifications"
+        >
+          <Bell className="w-4 h-4" />
+          <span className="absolute top-2 right-2 w-2 h-2 bg-accent rounded-full shadow-[0_0_8px_#c8f55a]"></span>
         </button>
-        <Link to="/profile" className="flex items-center gap-3 p-1 pr-3 bg-bg-card border border-border-primary rounded-full hover:border-border-hover transition-all group max-w-[180px]">
-          <img 
-            src= {user.avatar} 
-            className="w-8 h-8 rounded-full border border-border-primary group-hover:border-accent/40 transition-all" 
-            alt="" 
-          />
-          <span className="text-[12px] font-bold text-text-primary truncate hidden sm:block">{user.fullname}</span>
-          <span className="material-symbols-rounded text-lg text-text-muted hidden sm:block">expand_more</span>
+
+        {/* User Profile Pill */}
+        <Link 
+          to="/profile" 
+          className="flex items-center gap-2.5 p-1 pr-3.5 bg-white/[0.04] border border-white/10 rounded-full hover:border-accent/40 hover:bg-white/[0.08] transition-all group max-w-[200px]"
+        >
+          <div className="relative">
+            <img 
+              src={user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100'} 
+              className="w-8 h-8 rounded-full border border-white/10 group-hover:border-accent transition-all object-cover" 
+              alt={user?.fullname || 'Profile'} 
+            />
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-accent border-2 border-bg-primary rounded-full"></span>
+          </div>
+          <span className="text-[12.5px] font-semibold text-text-primary truncate hidden sm:block group-hover:text-accent transition-colors">
+            {user?.fullname || 'User'}
+          </span>
+          <ChevronDown className="w-3.5 h-3.5 text-text-muted group-hover:text-text-primary transition-colors hidden sm:block" />
         </Link>
       </div>
     </header>

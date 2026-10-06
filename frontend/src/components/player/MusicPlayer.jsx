@@ -1,9 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { 
+  Shuffle, 
+  SkipBack, 
+  Play, 
+  Pause, 
+  SkipForward, 
+  Repeat, 
+  Volume2, 
+  Volume1, 
+  VolumeX,
+  Heart,
+  Music
+} from 'lucide-react';
 import usePlayerStore from '../../store/playerStore.js';
 import usePlayer from '../hooks/usePlayer.js';
 
 const MusicPlayer = () => {
   const { howlRef, handleSeek } = usePlayer();
+  const [isLiked, setIsLiked] = useState(false);
+  const [isShuffle, setIsShuffle] = useState(false);
+  const [isRepeat, setIsRepeat] = useState(false);
   
   const { 
     currentTrack, 
@@ -39,74 +55,150 @@ const MusicPlayer = () => {
     handleSeek(percentage);
   };
 
+  const renderVolumeIcon = () => {
+    if (muted || volume === 0) return <VolumeX className="w-4 h-4 text-text-muted hover:text-text-primary" />;
+    if (volume < 0.5) return <Volume1 className="w-4 h-4 text-text-muted hover:text-text-primary" />;
+    return <Volume2 className="w-4 h-4 text-text-muted hover:text-text-primary" />;
+  };
+
   return (
-    <footer className="fixed bottom-0 left-0 right-0 h-player-height bg-bg-secondary/95 backdrop-blur-xl border-t border-border-primary z-50 px-6 flex items-center justify-between">
-      {/* Left: Song Info */}
-      <div className="flex items-center gap-4 w-1/4">
-        <div className="w-14 h-14 rounded-lg overflow-hidden border border-border-primary flex-shrink-0 group relative shadow-premium">
-          <img 
-            src={currentTrack.coverimage} 
-            alt={currentTrack.title} 
-            className={`w-full h-full object-cover transition-transform duration-700 ${isPlaying ? 'scale-110' : 'scale-100 opacity-80'}`} 
-          />
+    <footer className="fixed bottom-0 left-0 right-0 h-player-height glass-player z-50 px-4 md:px-8 flex items-center justify-between transition-all duration-300">
+      
+      {/* Left Column: Track Info with Cover Art & Favorite Button */}
+      <div className="flex items-center gap-3 w-1/4 min-w-[170px]">
+        <div className="relative w-10 h-10 md:w-11 md:h-11 rounded-lg overflow-hidden border border-white/10 flex-shrink-0 group shadow-md bg-bg-card">
+          {currentTrack.coverimage ? (
+            <img 
+              src={currentTrack.coverimage} 
+              alt={currentTrack.title} 
+              className={`w-full h-full object-cover transition-transform duration-700 ${isPlaying ? 'scale-105' : 'scale-100 opacity-80'}`} 
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-text-muted">
+              <Music className="w-4 h-4" />
+            </div>
+          )}
+          {isPlaying && (
+            <div className="absolute inset-0 bg-black/30 flex items-center justify-center gap-0.5 pointer-events-none">
+              <div className="equalizer-bar" style={{ height: '7px' }}></div>
+              <div className="equalizer-bar" style={{ height: '11px' }}></div>
+              <div className="equalizer-bar" style={{ height: '8px' }}></div>
+            </div>
+          )}
         </div>
-        <div className="truncate max-w-[180px]">
-          <h5 className="text-[14px] font-bold text-text-primary truncate cursor-pointer hover:text-accent transition-colors">
+
+        <div className="truncate flex-1 min-w-0">
+          <h5 className="text-[13.5px] font-bold text-text-primary truncate hover:text-accent transition-colors cursor-pointer">
             {currentTrack.title}
           </h5>
-          <p className="text-[11px] font-medium text-text-muted truncate cursor-pointer hover:text-text-primary transition-colors">
-            {currentTrack.artist}
+          <p className="text-[11px] font-medium text-text-muted truncate hover:text-text-primary transition-colors cursor-pointer">
+            {currentTrack.artist || 'Unknown Artist'}
           </p>
         </div>
+
+        <button 
+          type="button"
+          onClick={() => setIsLiked(!isLiked)}
+          className={`hidden sm:flex p-1.5 rounded-full hover:bg-white/5 transition-all ${isLiked ? 'text-accent' : 'text-text-muted hover:text-text-primary'}`}
+          aria-label="Like Track"
+        >
+          <Heart className={`w-4 h-4 ${isLiked ? 'fill-accent' : ''}`} />
+        </button>
       </div>
 
-      {/* Center: Controls */}
-      <div className="flex-1 max-w-2xl flex flex-col items-center gap-2">
-        <div className="flex items-center gap-8 text-text-muted">
-          <button className="hover:text-accent transition-colors"><span className="material-symbols-rounded text-xl">shuffle</span></button>
-          <button className="text-text-primary hover:text-accent transition-all active:scale-90"><span className="material-symbols-rounded text-3xl">skip_previous</span></button>
-          
+      {/* Center Column: Controls & Dynamic Seekbar */}
+      <div className="flex-1 max-w-xl flex flex-col items-center gap-1.5 px-2">
+        {/* Buttons Row */}
+        <div className="flex items-center gap-6 md:gap-7">
           <button 
-            onClick={togglePlayPause}
-            className="w-10 h-10 bg-text-primary rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-accent-glow"
+            type="button"
+            onClick={() => setIsShuffle(!isShuffle)}
+            className={`transition-colors p-1 rounded-md ${isShuffle ? 'text-accent' : 'text-text-muted hover:text-text-primary'}`}
+            title="Shuffle"
           >
-            <span className="material-symbols-rounded text-bg-primary text-2xl font-black">
-              {isPlaying ? 'pause' : 'play_arrow'}
-            </span>
+            <Shuffle className="w-4 h-4" />
           </button>
 
-          <button className="text-text-primary hover:text-accent transition-all active:scale-90"><span className="material-symbols-rounded text-3xl">skip_next</span></button>
-          <button className="hover:text-accent transition-colors"><span className="material-symbols-rounded text-xl">repeat</span></button>
+          <button 
+            type="button"
+            className="text-text-muted hover:text-text-primary transition-all active:scale-90"
+            title="Previous"
+          >
+            <SkipBack className="w-5 h-5 fill-current" />
+          </button>
+          
+          <button 
+            type="button"
+            onClick={togglePlayPause}
+            className="w-11 h-11 bg-accent hover:bg-accent-hover rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-accent-glow text-bg-primary"
+            aria-label={isPlaying ? 'Pause' : 'Play'}
+          >
+            {isPlaying ? (
+              <Pause className="w-5 h-5 fill-current" />
+            ) : (
+              <Play className="w-5 h-5 fill-current ml-0.5" />
+            )}
+          </button>
+
+          <button 
+            type="button"
+            className="text-text-muted hover:text-text-primary transition-all active:scale-90"
+            title="Next"
+          >
+            <SkipForward className="w-5 h-5 fill-current" />
+          </button>
+
+          <button 
+            type="button"
+            onClick={() => setIsRepeat(!isRepeat)}
+            className={`transition-colors p-1 rounded-md ${isRepeat ? 'text-accent' : 'text-text-muted hover:text-text-primary'}`}
+            title="Repeat"
+          >
+            <Repeat className="w-4 h-4" />
+          </button>
         </div>
         
-        {/* Progress Bar */}
-        <div className="w-full flex items-center gap-3 group px-4">
-          <span className="text-[10px] mono-text text-text-muted w-10 text-right">{formatTime(currentTime)}</span>
+        {/* Seekbar Container */}
+        <div className="w-full flex items-center gap-3 group px-2">
+          <span className="text-[10px] font-mono text-text-muted w-9 text-right select-none">
+            {formatTime(currentTime)}
+          </span>
+
           <div 
-            className="flex-1 h-1 bg-border-primary rounded-full relative overflow-hidden cursor-pointer"
+            className="flex-1 h-1.5 bg-white/[0.08] hover:h-2 rounded-full relative cursor-pointer transition-all overflow-hidden"
             onClick={onProgressClick}
           >
             <div 
-              className="absolute inset-0 bg-accent transition-all duration-100 shadow-accent-glow"
-              style={{ width: `${progress}%` }}
+              className="absolute inset-y-0 left-0 bg-accent group-hover:bg-accent-hover transition-all duration-100 shadow-[0_0_12px_#c8f55a]"
+              style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
             ></div>
           </div>
-          <span className="text-[10px] mono-text text-text-muted w-10">{formatTime(duration)}</span>
+
+          <span className="text-[10px] font-mono text-text-muted w-9 select-none">
+            {formatTime(duration)}
+          </span>
         </div>
       </div>
 
-      {/* Right: Utils */}
-      <div className="flex items-center justify-end gap-6 w-1/4">
-        <div className="flex items-center gap-3 w-32 group">
-          <button onClick={toggleMute} className="text-text-muted hover:text-text-primary transition-colors">
-            <span className="material-symbols-rounded text-xl">
-              {muted || volume === 0 ? 'volume_off' : volume < 0.5 ? 'volume_down' : 'volume_up'}
-            </span>
+      {/* Right Column: Volume Controller */}
+      <div className="flex items-center justify-end gap-3 w-1/4 min-w-[140px]">
+        <div className="flex items-center gap-2.5 bg-white/[0.03] border border-white/5 px-3 py-1.5 rounded-full">
+          <button 
+            type="button"
+            onClick={toggleMute} 
+            className="text-text-muted hover:text-accent transition-colors"
+            aria-label="Mute/Unmute"
+          >
+            {renderVolumeIcon()}
           </button>
           <input 
-            type="range" min="0" max="1" step="0.01" value={muted ? 0 : volume}
+            type="range" 
+            min="0" 
+            max="1" 
+            step="0.01" 
+            value={muted ? 0 : volume}
             onChange={handleVolumeChange}
-            className="w-full h-1 bg-border-primary rounded-full appearance-none cursor-pointer accent-accent"
+            className="w-16 md:w-24 h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-accent transition-all hover:bg-white/20"
           />
         </div>
       </div>

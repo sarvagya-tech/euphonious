@@ -13,7 +13,7 @@ const Profile = () => {
 
   const handleLogout = () => {
     if (logout) logout();
-    toast.success('Signed out of Groovio');
+    toast.success('Signed out of SyncTune');
     navigate('/login');
   };
   
@@ -47,9 +47,9 @@ const Profile = () => {
               
               {/* User Name & Email */}
               <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-2">
-                {user?.fullname || 'Groovio User'}
+                {user?.fullname || 'SyncTune User'}
               </h1>
-              <p className="text-sm font-mono text-text-muted mb-8">{user?.email || 'user@groovio.fm'}</p>
+              <p className="text-sm font-mono text-text-muted mb-8">{user?.email || 'user@synctune.fm'}</p>
 
               {/* Action Buttons */}
               <div className="flex items-center gap-4">

@@ -59,10 +59,10 @@ const Sidebar = () => {
           </div>
           <div className="flex flex-col">
             <span className="text-xl font-bold tracking-tight text-white font-sans">
-              Groovio<span className="text-accent">.</span>
+              SyncTune<span className="text-accent">.</span>
             </span>
             <span className="text-[10px] font-mono uppercase tracking-widest text-text-muted -mt-1">
-              Hi-Fi Audio
+              Synchronized Audio
             </span>
           </div>
         </Link>

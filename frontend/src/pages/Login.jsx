@@ -55,7 +55,7 @@ const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-3.5 px-4 text-text-primary text-sm outline-none focus:border-accent focus:bg-white/[0.05] focus:shadow-[0_0_15px_rgba(200,245,90,0.1)] transition-all placeholder:text-text-muted/40"
               type="email"
-              placeholder="curator@groovio.fm"
+              placeholder="curator@synctune.fm"
             />
           </div>
 

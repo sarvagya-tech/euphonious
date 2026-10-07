@@ -1,6 +1,7 @@
 import React from 'react';
 import { Play, Music, Heart } from 'lucide-react';
 import usePlayerStore from '../../store/playerStore.js';
+import useAuthCheck from '../../hooks/useAuthCheck.js';
 
 const getTrackKey = (track) => {
   if (!track) return '';
@@ -19,12 +20,17 @@ const formatDuration = (duration) => {
 
 const PlaylistSongRow = ({ index, song }) => {
   const { currentTrack, isPlaying, setSong, togglePlayPause } = usePlayerStore();
+  const { checkAuth } = useAuthCheck();
 
   const isCurrentSong = getTrackKey(currentTrack) === getTrackKey(song);
   const isThisSongPlaying = isCurrentSong && isPlaying;
   const coverImage = song.coverimage || song.image;
 
   const handlePlay = () => {
+    if (!checkAuth('Please log in to play music')) {
+      return;
+    }
+
     if (isCurrentSong) {
       togglePlayPause();
       return;

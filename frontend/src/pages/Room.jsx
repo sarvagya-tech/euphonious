@@ -160,7 +160,7 @@ const Room = () => {
     <div className="bg-bg-primary min-h-screen flex text-text-primary selection:bg-accent/20 overflow-hidden">
       <Sidebar />
 
-      <main className="flex-1 md:ml-sidebar-width h-screen flex flex-col relative pt-16 overflow-hidden">
+      <main className="flex-1 w-full h-screen flex flex-col relative pt-16 overflow-hidden">
         <Navbar />
 
         <div className="flex-1 flex flex-col p-3 md:p-5 md:pb-4 pb-3 gap-3 overflow-hidden min-h-0">

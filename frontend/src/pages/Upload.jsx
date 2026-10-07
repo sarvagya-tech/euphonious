@@ -80,7 +80,7 @@ const Upload = () => {
     <div className="bg-bg-primary min-h-screen flex text-text-primary selection:bg-accent/20">
       <Sidebar />
 
-      <main className="flex-1 md:ml-sidebar-width h-screen overflow-y-auto custom-scrollbar relative pt-16 pb-36">
+      <main className="flex-1 w-full h-screen overflow-y-auto custom-scrollbar relative pt-16 pb-36">
         <Navbar />
 
         <div className="p-6 md:p-10 max-w-4xl mx-auto animate-fade-in space-y-8">
@@ -132,18 +132,35 @@ const Upload = () => {
                   />
                 </div>
 
-                {/* Genre */}
+                {/* Category / Genre */}
                 <div className="space-y-2 group">
-                  <label className="text-[11px] font-bold uppercase tracking-widest text-text-muted group-focus-within:text-accent transition-colors">
-                    Genre
+                  <label className="text-[11px] font-bold uppercase tracking-widest text-text-muted group-focus-within:text-accent transition-colors flex items-center justify-between">
+                    <span>Category / Mood</span>
+                    <span className="text-[10px] text-text-muted font-normal lowercase">optional</span>
                   </label>
                   <input
                     type="text"
                     value={genre}
-                    placeholder="e.g. Synthwave, Ambient, Electronic"
+                    placeholder="e.g. Love, Bhakti, Sad, Party, Sufi, Lo-Fi"
                     onChange={(e) => setGenre(e.target.value)}
                     className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-accent focus:bg-white/[0.05] transition-all text-text-primary placeholder:text-text-muted/40 focus:shadow-[0_0_15px_rgba(200,245,90,0.1)]"
                   />
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {['Love', 'Bhakti', 'Sad', 'Party', 'Sufi', 'Lo-Fi', 'Hip-Hop', 'Acoustic'].map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => setGenre(cat)}
+                        className={`text-[10.5px] px-2 py-0.5 rounded-lg border transition-all ${
+                          genre.toLowerCase() === cat.toLowerCase()
+                            ? 'bg-accent text-bg-primary border-accent font-bold'
+                            : 'bg-white/[0.03] border-white/10 text-text-muted hover:text-white hover:border-white/20'
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Duration */}

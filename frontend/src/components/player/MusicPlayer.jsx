@@ -8,15 +8,17 @@ import {
   Repeat, 
   Volume2, 
   Volume1, 
-  VolumeX,
-  Heart,
-  Music
+  VolumeX, 
+  Heart, 
+  Music 
 } from 'lucide-react';
 import usePlayerStore from '../../store/playerStore.js';
 import usePlayer from '../hooks/usePlayer.js';
+import useAuthCheck from '../../hooks/useAuthCheck.js';
 
 const MusicPlayer = () => {
   const { howlRef, handleSeek } = usePlayer();
+  const { checkAuth } = useAuthCheck();
   const [isLiked, setIsLiked] = useState(false);
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
@@ -33,6 +35,16 @@ const MusicPlayer = () => {
   } = usePlayerStore();
 
   if (!currentTrack) return null;
+
+  const handleTogglePlay = () => {
+    if (!checkAuth('Please log in to play music')) return;
+    togglePlayPause();
+  };
+
+  const handleLike = () => {
+    if (!checkAuth('Please log in to like tracks')) return;
+    setIsLiked(!isLiked);
+  };
 
   const formatTime = (seconds) => {
     if (!seconds || isNaN(seconds)) return "0:00";
@@ -98,7 +110,7 @@ const MusicPlayer = () => {
 
         <button 
           type="button"
-          onClick={() => setIsLiked(!isLiked)}
+          onClick={handleLike}
           className={`hidden sm:flex p-1.5 rounded-full hover:bg-white/5 transition-all ${isLiked ? 'text-accent' : 'text-text-muted hover:text-text-primary'}`}
           aria-label="Like Track"
         >
@@ -129,7 +141,7 @@ const MusicPlayer = () => {
           
           <button 
             type="button"
-            onClick={togglePlayPause}
+            onClick={handleTogglePlay}
             className="w-11 h-11 bg-accent hover:bg-accent-hover rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-accent-glow text-bg-primary"
             aria-label={isPlaying ? 'Pause' : 'Play'}
           >

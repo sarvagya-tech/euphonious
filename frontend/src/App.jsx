@@ -9,6 +9,7 @@ import CreatePlaylist from './pages/CreatePlaylist';
 import Room from './pages/Room';
 import RoomSelection from './pages/RoomSelection';
 import Upload from './pages/Upload';
+import ProtectedRoute from './components/common/ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -28,18 +29,43 @@ function App() {
         },
       }} />
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        {/* Landing directly on Home */}
+        <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/search" element={<Search />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/playlist/:playlistId" element={<Playlist />} />
-        <Route path="/playlist/create" element={<CreatePlaylist />} />
-        <Route path="/room" element={<RoomSelection />} />
-        <Route path="/room/:id" element={<Room />} />
-        <Route path="/upload" element={<Upload />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+
+        {/* Protected Features */}
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } />
+        <Route path="/playlist/create" element={
+          <ProtectedRoute>
+            <CreatePlaylist />
+          </ProtectedRoute>
+        } />
+        <Route path="/room" element={
+          <ProtectedRoute>
+            <RoomSelection />
+          </ProtectedRoute>
+        } />
+        <Route path="/room/:id" element={
+          <ProtectedRoute>
+            <Room />
+          </ProtectedRoute>
+        } />
+        <Route path="/upload" element={
+          <ProtectedRoute>
+            <Upload />
+          </ProtectedRoute>
+        } />
+
+        {/* Fallback to Home */}
+        <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
     </BrowserRouter>
   );

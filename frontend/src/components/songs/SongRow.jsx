@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
 import { Play, Pause, Music, Heart } from 'lucide-react';
 import usePlayerStore from '../../store/playerStore.js';
+import useAuthCheck from '../../hooks/useAuthCheck.js';
 
 const SongRow = ({ index, song }) => {
   const { currentTrack, isPlaying, setSong, togglePlayPause } = usePlayerStore();
+  const { checkAuth } = useAuthCheck();
   const [isLiked, setIsLiked] = useState(false);
 
   const isCurrentSong = currentTrack?._id === song._id;
   const isThisSongPlaying = isCurrentSong && isPlaying;
 
   const handlePlay = () => {
+    if (!checkAuth('Please log in to play music')) {
+      return;
+    }
+
     if (isCurrentSong) {
       togglePlayPause();
     } else {

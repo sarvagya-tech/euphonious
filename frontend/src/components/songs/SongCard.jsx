@@ -1,15 +1,21 @@
 import React from 'react';
 import { Play, Pause, Music } from 'lucide-react';
 import usePlayerStore from '../../store/playerStore.js';
+import useAuthCheck from '../../hooks/useAuthCheck.js';
 
 const SongCard = ({ song }) => {
   const { currentTrack, isPlaying, setSong, togglePlayPause } = usePlayerStore();
+  const { checkAuth } = useAuthCheck();
   
   const isCurrentSong = currentTrack?._id === song._id;
   const isThisSongPlaying = isCurrentSong && isPlaying;
 
   const handlePlay = (e) => {
     e.stopPropagation();
+    if (!checkAuth('Please log in to play music')) {
+      return;
+    }
+
     if (isCurrentSong) {
       togglePlayPause();
     } else {

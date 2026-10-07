@@ -1,10 +1,15 @@
 import axios from 'axios';
 import useAuthStore from '../store/authStore';
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:7000/api/v1";
+// Clean up and normalize base URL
+let rawBaseUrl = (import.meta.env.VITE_API_BASE_URL || "http://localhost:7000/api/v1").trim();
+rawBaseUrl = rawBaseUrl.replace(/\/+$/, ''); // remove trailing slashes
+if (!rawBaseUrl.endsWith('/api/v1')) {
+    rawBaseUrl = `${rawBaseUrl}/api/v1`;
+}
 
 const api = axios.create({
-    baseURL: apiBaseUrl,
+    baseURL: rawBaseUrl,
     withCredentials: true
 });
 

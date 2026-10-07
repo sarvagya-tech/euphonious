@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Waves, Eye, EyeOff, Loader2, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { loginService } from '../services/auth.service.js';
@@ -7,6 +7,7 @@ import useAuthStore from '../store/authStore.js';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const setUser = useAuthStore((s) => s.setUser);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,7 +22,8 @@ const Login = () => {
       const { user, accessToken } = result.data;
       setUser(user, accessToken);
       toast.success(result.message || 'Logged in successfully');
-      navigate('/home');
+      const origin = location.state?.from?.pathname || '/home';
+      navigate(origin, { replace: true });
     } catch (error) {
       toast.error(error?.response?.data?.message || 'Login failed');
     } finally {

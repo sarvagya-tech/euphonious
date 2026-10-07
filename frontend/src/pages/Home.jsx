@@ -8,9 +8,11 @@ import SongCard from '../components/songs/SongCard';
 import SongRow from '../components/songs/SongRow';
 import { getallSongs } from '../services/song.service';
 import usePlayerStore from '../store/playerStore';
+import useAuthCheck from '../hooks/useAuthCheck';
 
 const Home = () => {
   const { currentTrack, recentlyPlayed, setSong, isPlaying, togglePlayPause } = usePlayerStore();
+  const { checkAuth } = useAuthCheck();
   const [featured, setFeatured] = useState([]);
 
   useEffect(() => {
@@ -23,11 +25,26 @@ const Home = () => {
 
   const topSong = featured[0];
 
+  const handleHeroPlay = () => {
+    if (!topSong) return;
+    if (!checkAuth('Please log in to play music')) return;
+    setSong(topSong);
+  };
+
+  const handleRecentPlay = (song, isCurrent) => {
+    if (!checkAuth('Please log in to play music')) return;
+    if (isCurrent) {
+      togglePlayPause();
+    } else {
+      setSong(song);
+    }
+  };
+
   return (
     <div className="bg-bg-primary min-h-screen flex text-text-primary selection:bg-accent/20">
       <Sidebar />
 
-      <main className="flex-1 md:ml-sidebar-width h-screen overflow-y-auto custom-scrollbar relative pt-16 pb-36">
+      <main className="flex-1 w-full h-screen overflow-y-auto custom-scrollbar relative pt-16 pb-36">
         <Navbar />
 
         <div className="p-6 md:p-10 space-y-12 max-w-7xl mx-auto">
@@ -62,7 +79,7 @@ const Home = () => {
                     to="/search"
                     className="bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-text-primary font-bold py-2.5 px-5 rounded-xl transition-all text-xs tracking-wider uppercase"
                   >
-                    <span>Browse Genres</span>
+                    <span>Explore Categories</span>
                   </Link>
                 </div>
               </div>
@@ -70,7 +87,7 @@ const Home = () => {
               {/* Hero Featured Mini Player Chip */}
               {topSong && (
                 <div 
-                  onClick={() => setSong(topSong)}
+                  onClick={handleHeroPlay}
                   className="bg-black/40 border border-white/10 backdrop-blur-xl p-3 md:p-3.5 rounded-2xl flex items-center gap-3.5 hover:border-accent/40 transition-all cursor-pointer group shadow-premium max-w-sm w-full md:w-auto"
                 >
                   <div className="relative w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-bg-card border border-white/10 shadow-md">
@@ -131,13 +148,7 @@ const Home = () => {
                   return (
                     <div 
                       key={song._id || song.audio || i} 
-                      onClick={() => {
-                        if (isCurrent) {
-                          togglePlayPause();
-                        } else {
-                          setSong(song);
-                        }
-                      }}
+                      onClick={() => handleRecentPlay(song, isCurrent)}
                       className={`min-w-[150px] max-w-[150px] p-3 rounded-2xl transition-all group cursor-pointer border ${
                         isCurrent
                           ? 'bg-accent/[0.06] border-accent/35 shadow-sm'

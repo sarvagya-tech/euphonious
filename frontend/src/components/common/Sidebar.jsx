@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Search, Radio, Upload, Plus, X, Waves, Disc, Sparkles } from 'lucide-react';
+import { Home, Search, Radio, Upload, Plus, X, Waves, Disc, LogIn } from 'lucide-react';
 import useUiStore from '../../store/uiStore';
+import useAuthStore from '../../store/authStore';
 import { getPlaylist } from '../../services/playlist.service';
 
 const Sidebar = () => {
   const location = useLocation();
   const { isSidebarOpen, closeSidebar } = useUiStore();
+  const { user, token } = useAuthStore();
+  const isAuthenticated = Boolean(user && token);
   const isActive = (path) => location.pathname === path;
   const [playlists, setPlaylists] = useState([]);
   const navigate = useNavigate();
@@ -19,41 +22,47 @@ const Sidebar = () => {
   ];
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setPlaylists([]);
+      return;
+    }
+
     getPlaylist().then((data) => {
       if (data && data.data) {
-        setPlaylists(data.data.data);
+        setPlaylists(data.data.data || []);
       }
     });
-  }, []);
+  }, [isAuthenticated]);
 
   return (
     <>
-      {/* Mobile Backdrop */}
+      {/* Backdrop (Active when Sidebar is Opened from 3-line Menu) */}
       <div
-        className={`fixed inset-0 bg-black/70 backdrop-blur-sm z-40 transition-opacity duration-300 md:hidden ${
+        className={`fixed inset-0 bg-black/70 backdrop-blur-sm z-50 transition-opacity duration-300 ${
           isSidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={closeSidebar}
       />
 
-      {/* Sidebar Container */}
+      {/* Slide-out Sidebar Drawer */}
       <aside
-        className={`fixed left-0 top-0 h-full w-sidebar-width glass-sidebar flex flex-col p-5 pb-28 z-50 overflow-hidden transform transition-transform duration-300 ease-out ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        className={`fixed left-0 top-0 h-full w-[280px] md:w-[300px] glass-sidebar flex flex-col p-5 pb-28 z-50 overflow-hidden transform transition-transform duration-300 ease-out shadow-2xl border-r border-white/10 ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        {/* Close Button Mobile */}
+        {/* Close Button */}
         <button
           type="button"
           onClick={closeSidebar}
-          className="md:hidden absolute top-4 right-4 w-9 h-9 rounded-xl border border-white/10 bg-white/[0.04] flex items-center justify-center text-text-muted hover:text-text-primary"
+          className="absolute top-4 right-4 w-9 h-9 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/20 flex items-center justify-center text-text-muted hover:text-white transition-all active:scale-95 shadow-sm"
           aria-label="Close navigation menu"
+          title="Close Sidebar"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Brand Logo */}
-        <Link to="/home" className="mb-8 flex items-center gap-3 group px-2 pt-1">
+        <Link to="/home" onClick={closeSidebar} className="mb-8 flex items-center gap-3 group px-2 pt-1">
           <div className="w-9 h-9 bg-accent rounded-xl flex items-center justify-center shadow-accent-glow group-hover:scale-105 transition-transform duration-300">
             <Waves className="w-5 h-5 text-bg-primary stroke-[2.5]" />
           </div>
@@ -96,13 +105,26 @@ const Sidebar = () => {
         <div className="flex-1 overflow-y-auto custom-scrollbar -mx-2 px-2 flex flex-col">
           <div className="flex items-center justify-between px-3 mb-3">
             <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted/70">Playlists</p>
-            <span className="text-[10px] font-mono text-text-muted bg-white/[0.04] px-1.5 py-0.5 rounded">
-              {playlists.length}
-            </span>
+            {isAuthenticated && (
+              <span className="text-[10px] font-mono text-text-muted bg-white/[0.04] px-1.5 py-0.5 rounded">
+                {playlists.length}
+              </span>
+            )}
           </div>
 
           <div className="space-y-1 flex-1">
-            {playlists.length === 0 ? (
+            {!isAuthenticated ? (
+              <div className="p-3 text-center space-y-2 rounded-xl bg-white/[0.02] border border-white/5 mx-1">
+                <p className="text-xs text-text-muted font-medium">Sign in to view and save your custom playlists</p>
+                <Link
+                  to="/login"
+                  onClick={closeSidebar}
+                  className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-accent hover:underline"
+                >
+                  <LogIn className="w-3 h-3" /> Log In
+                </Link>
+              </div>
+            ) : playlists.length === 0 ? (
               <p className="text-xs text-text-muted/60 px-3 py-2 italic">No playlists yet</p>
             ) : (
               playlists.map((pl, i) => (

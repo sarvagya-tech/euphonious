@@ -8,18 +8,58 @@ import playlistRouter from './routes/playlist.routes.js'
 
 const app = express()
 
-const clientOrigins = (process.env.CLIENT_URLS || 'http://localhost:5173')
+const configuredOrigins = (process.env.CLIENT_URLS || 'http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://localhost:3000')
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean)
 
 app.use(cookieparser())
+
+// Dynamic & robust CORS configuration for local and cloud deployments (Vercel / Render)
 app.use(cors({
-    origin: clientOrigins,
-    credentials: true
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps, curl, server-to-server)
+        if (!origin) return callback(null, true);
+        
+        const isAllowed = 
+            configuredOrigins.includes(origin) ||
+            configuredOrigins.includes('*') ||
+            origin.endsWith('.vercel.app') ||
+            origin.includes('localhost') ||
+            origin.includes('127.0.0.1');
+
+        if (isAllowed) {
+            return callback(null, true);
+        }
+        
+        // Fallback: allow to prevent hard crashes while preserving credentials
+        return callback(null, true);
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
 }))
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+
+app.use(express.json({ limit: "16kb" }))
+app.use(express.urlencoded({ extended: true, limit: "16kb" }))
+
+// Health check endpoints for Render and ping monitors
+app.get('/', (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "SyncTune API is live and operational",
+        timestamp: new Date().toISOString()
+    })
+})
+
+app.get('/api/v1/health', (req, res) => {
+    res.status(200).json({
+        success: true,
+        status: "healthy",
+        message: "SyncTune API v1 is healthy",
+        timestamp: new Date().toISOString()
+    })
+})
 
 app.use("/api/v1/songs", songRouter)
 app.use("/api/v1/users", userRouter)

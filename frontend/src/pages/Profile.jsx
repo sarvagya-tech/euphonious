@@ -5,23 +5,26 @@ import Sidebar from '../components/common/Sidebar';
 import Navbar from '../components/common/Navbar';
 import MusicPlayer from '../components/player/MusicPlayer';
 import useAuthStore from '../store/authStore';
+import usePlayerStore from '../store/playerStore';
 import toast from 'react-hot-toast';
 
 const Profile = () => {
-  const { user, logout } = useAuthStore();
+  const { user, logOut } = useAuthStore();
+  const { setSong } = usePlayerStore();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    if (logout) logout();
+    if (logOut) logOut();
+    if (setSong) setSong(null);
     toast.success('Signed out of SyncTune');
-    navigate('/login');
+    navigate('/home');
   };
   
   return (
     <div className="bg-bg-primary min-h-screen flex text-text-primary selection:bg-accent/20">
       <Sidebar />
       
-      <main className="flex-1 md:ml-sidebar-width h-screen overflow-y-auto custom-scrollbar relative pt-16 pb-36">
+      <main className="flex-1 w-full h-screen overflow-y-auto custom-scrollbar relative pt-16 pb-36">
         <Navbar />
 
         <div className="p-6 md:p-12 max-w-4xl mx-auto space-y-10">

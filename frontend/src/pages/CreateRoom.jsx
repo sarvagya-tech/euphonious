@@ -43,7 +43,7 @@ const CreateRoom = () => {
     <div className="bg-bg-primary min-h-screen flex selection:bg-accent/20 text-text-primary">
       <Sidebar />
       
-      <main className="flex-1 md:ml-sidebar-width h-screen overflow-y-auto custom-scrollbar relative pt-16 pb-36">
+      <main className="flex-1 w-full h-screen overflow-y-auto custom-scrollbar relative pt-16 pb-36">
         <Navbar />
 
         <div className="p-6 md:p-10 max-w-3xl mx-auto animate-fade-in space-y-8">

@@ -7,12 +7,14 @@ import PlaylistSongRow from '../components/playlist/PlaylistSongRow';
 import { getPlaylistById } from '../services/playlist.service';
 import { useParams, Link } from 'react-router-dom';
 import usePlayerStore from '../store/playerStore';
+import useAuthCheck from '../hooks/useAuthCheck';
 
 const Playlist = () => {
   const [playlist, setPlaylist] = useState(null);
   const [loading, setLoading] = useState(true);
   const { playlistId } = useParams();
   const { setSong, setQueue } = usePlayerStore();
+  const { checkAuth } = useAuthCheck();
   
   useEffect(() => {
     if (!playlistId) return;
@@ -34,6 +36,7 @@ const Playlist = () => {
 
   const handlePlayAll = () => {
     if (!songs.length) return;
+    if (!checkAuth('Please log in to play music')) return;
     setQueue(songs);
     setSong(songs[0]);
   };
@@ -42,7 +45,7 @@ const Playlist = () => {
     <div className="bg-bg-primary min-h-screen flex selection:bg-accent/20 text-text-primary">
       <Sidebar />
       
-      <main className="flex-1 md:ml-sidebar-width h-screen overflow-y-auto custom-scrollbar relative pb-40">
+      <main className="flex-1 w-full h-screen overflow-y-auto custom-scrollbar relative pb-40">
         <Navbar />
         
         {/* Cinematic Header with Cover Backdrop */}

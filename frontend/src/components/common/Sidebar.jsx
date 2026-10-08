@@ -121,7 +121,7 @@ const Sidebar = () => {
                   onClick={closeSidebar}
                   className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-accent hover:underline"
                 >
-                  <LogIn className="w-3 h-3" /> Log In
+                  <LogIn className="w-3 h-3" /> Sign In
                 </Link>
               </div>
             ) : playlists.length === 0 ? (

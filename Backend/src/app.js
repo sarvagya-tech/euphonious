@@ -1,6 +1,8 @@
 import express from 'express'
 import cookieparser from 'cookie-parser'
 import cors from 'cors'
+import { toNodeHandler } from 'better-auth/node'
+import { auth } from './lib/auth.js'
 import userRouter from './routes/user.routes.js'
 import songRouter from './routes/songs.routes.js'
 import chatRoomrouter from './routes/cahtRoom.routes.js'
@@ -39,6 +41,10 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
 }))
+
+// Mount Better Auth handler BEFORE body-parsing middleware (Express 5 wildcard syntax)
+app.all("/api/auth/*splat", toNodeHandler(auth))
+app.all("/api/auth", toNodeHandler(auth))
 
 app.use(express.json({ limit: "16kb" }))
 app.use(express.urlencoded({ extended: true, limit: "16kb" }))

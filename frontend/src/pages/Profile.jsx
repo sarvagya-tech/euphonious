@@ -6,6 +6,7 @@ import Navbar from '../components/common/Navbar';
 import MusicPlayer from '../components/player/MusicPlayer';
 import useAuthStore from '../store/authStore';
 import usePlayerStore from '../store/playerStore';
+import { authClient } from '../lib/auth-client.js';
 import toast from 'react-hot-toast';
 
 const Profile = () => {
@@ -13,7 +14,12 @@ const Profile = () => {
   const { setSong } = usePlayerStore();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await authClient.signOut();
+    } catch (e) {
+      console.log('Error signing out of Better Auth session:', e);
+    }
     if (logOut) logOut();
     if (setSong) setSong(null);
     toast.success('Signed out of SyncTune');

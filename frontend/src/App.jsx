@@ -1,6 +1,6 @@
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
-import Register from './pages/Register';
 import Home from './pages/Home';
 import Search from './pages/Search';
 import Profile from './pages/Profile';
@@ -11,10 +11,45 @@ import RoomSelection from './pages/RoomSelection';
 import Upload from './pages/Upload';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
+import { authClient } from './lib/auth-client.js';
+import useAuthStore from './store/authStore.js';
+
+function AuthSessionSync() {
+  const { setUser } = useAuthStore();
+
+  useEffect(() => {
+    const syncSession = async () => {
+      try {
+        const sessionRes = await authClient.getSession();
+        if (sessionRes?.data?.user) {
+          const u = sessionRes.data.user;
+          const normalized = {
+            _id: u.id,
+            id: u.id,
+            fullname: u.name || 'SyncTune User',
+            name: u.name,
+            email: u.email,
+            avatar: u.image || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=400',
+            createdAt: u.createdAt,
+          };
+          const token = sessionRes.data.session?.token || sessionRes.data.session?.id || 'google_session_active';
+          setUser(normalized, token);
+        }
+      } catch (err) {
+        console.log('Session sync error:', err);
+      }
+    };
+
+    syncSession();
+  }, [setUser]);
+
+  return null;
+}
 
 function App() {
   return (
     <BrowserRouter>
+      <AuthSessionSync />
       <Toaster position="top-center" toastOptions={{
         style: {
           background: '#0a0a0a',
@@ -34,7 +69,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/search" element={<Search />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/register" element={<Navigate to="/login" replace />} />
         <Route path="/playlist/:playlistId" element={<Playlist />} />
 
         {/* Protected Features */}

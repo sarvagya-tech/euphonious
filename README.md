@@ -185,6 +185,12 @@ music/
 
 ## 🔌 API Reference
 
+### System & Health Check
+| Method | Endpoint | Auth Required | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/` | No | Base root server status & timestamp |
+| `GET` | `/api/v1/health` | No | API v1 health check for monitoring services (e.g. Render/uptime robots) |
+
 ### User & Authentication (`/api/v1/users`)
 | Method | Endpoint | Auth Required | Description |
 | :--- | :--- | :--- | :--- |
@@ -201,7 +207,7 @@ music/
 ### Songs & Music Catalog (`/api/v1/songs`)
 | Method | Endpoint | Auth Required | Description |
 | :--- | :--- | :--- | :--- |
-| `POST` | `/api/v1/songs/upload-song` | No / Yes | Upload song audio + cover image to Cloudinary |
+| `POST` | `/api/v1/songs/upload-song` | No | Upload song audio + cover image to Cloudinary (Protected on frontend) |
 | `GET` | `/api/v1/songs/all-songs` | No | Retrieve list of all available songs |
 | `GET` | `/api/v1/songs/search` | No | Search songs by `title`, `artist`, or `genre` query params |
 

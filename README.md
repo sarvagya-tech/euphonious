@@ -43,9 +43,9 @@ flowchart TD
         Controllers["Controllers (Song, Room, Playlist, User)"]
     end
 
-    subgraph Storage["Cloud & Database"]
-        MongoDB[("MongoDB Database\n(Users, Songs, Rooms, Playlists, TTL Messages)")]
-        Cloudinary[("Cloudinary Media CDN\n(Audio Tracks & Cover Art)")]
+    subgraph Storage["Cloud & Database Services"]
+        MongoDB[("MongoDB Database<br/>Users, Songs, Rooms, Playlists, Messages")]
+        Cloudinary[("Cloudinary Media CDN<br/>Audio Tracks & Cover Art")]
     end
 
     UI --> Zustand
@@ -53,15 +53,29 @@ flowchart TD
     UI --> APIClient
     UI --> SocketClient
 
-    APIClient -->|REST API Requests| ExpressApp
-    SocketClient <-->|WebSockets (Sync, Chat, Rooms)| SocketServer
+    APIClient -->|"REST API Requests"| ExpressApp
+    SocketClient <-->|"WebSockets: Room Sync & Chat"| SocketServer
 
     ExpressApp --> AuthMiddleware
     AuthMiddleware --> Controllers
     Controllers --> MongoDB
-    Controllers --> Cloudinary
-    SocketServer <--> MongoDB
+    Controllers -->|"Upload Audio / Artwork"| Cloudinary
+    SocketServer <-->|"Persist Messages & Validate Rooms"| MongoDB
+    AudioEngine -.->|"Stream Audio URL"| Cloudinary
 ```
+
+### Data Flow & Communication Patterns
+
+1. **Authentication Flow**:
+   - **Custom JWT**: Handled via `/api/v1/users/login` and `/register`, setting secure HTTP-only cookies and returning user tokens.
+   - **Better-Auth & OAuth 2.0**: Handled at `/api/auth/*` directly connecting to MongoDB via native MongoClient adapter.
+2. **Audio Streaming Flow**:
+   - Track metadata (title, artist, CDN URL) is fetched from MongoDB via Express REST API.
+   - The frontend audio engine ([Howler.js](https://howlerjs.com/)) streams high-fidelity audio directly from Cloudinary CDN.
+3. **Real-Time Room Synchronization**:
+   - The host emits playback actions (`playSong`, `pauseSong`, `seekSong`, `skipSong`) over WebSockets.
+   - The Socket.io server broadcasts the event to all room participants with timestamp latency compensation (`startedAt = Date.now() - position`).
+   - In-room chat messages are broadcast instantly to room members and persisted to MongoDB with a 30-minute auto-deletion TTL index.
 
 ---
 

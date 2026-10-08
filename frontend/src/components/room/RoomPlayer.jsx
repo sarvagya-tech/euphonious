@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import usePlayerStore from "../../store/playerStore";
 import useRoomStore from "../../store/roomStore";
-import usePlayer from "../hooks/usePlayer.js";
+import usePlayer from "../../hooks/usePlayer.js";
 import socket, { syncPause, syncPlay, syncSeek, syncSkip } from "../../socket/socket.js";
 import { useParams } from 'react-router-dom';
 

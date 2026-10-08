@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Howl } from "howler";
-import usePlayerStore from "../../store/playerStore.js";
+import usePlayerStore from "../store/playerStore.js";
 
 const usePlayer = () => {
     const { 

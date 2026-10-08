@@ -31,7 +31,7 @@ import useAuthStore from '../store/authStore.js';
 import { getCurrentRoom } from '../services/room.service.js';
 import { getallSongs } from '../services/song.service.js';
 import usePlayerStore from '../store/playerStore.js';
-import usePlayer from '../components/hooks/usePlayer.js';
+import usePlayer from '../hooks/usePlayer.js';
 
 const Room = () => {
   const { id: roomId } = useParams();

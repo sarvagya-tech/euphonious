@@ -9,6 +9,7 @@ import chatRoomrouter from './routes/cahtRoom.routes.js'
 import playlistRouter from './routes/playlist.routes.js'
 
 const app = express()
+app.set('trust proxy', 1)
 
 const configuredOrigins = (process.env.CLIENT_URLS || 'http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://localhost:3000')
     .split(',')

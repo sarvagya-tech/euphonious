@@ -13,7 +13,7 @@ import {
   Music 
 } from 'lucide-react';
 import usePlayerStore from '../../store/playerStore.js';
-import usePlayer from '../hooks/usePlayer.js';
+import usePlayer from '../../hooks/usePlayer.js';
 import useAuthCheck from '../../hooks/useAuthCheck.js';
 
 const MusicPlayer = () => {

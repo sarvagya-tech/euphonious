@@ -1,16 +1,50 @@
-# React + Vite
+# 🎨 SyncTune Frontend Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> Modern React 19 + Vite frontend application for SyncTune (Euphonious).
 
-Currently, two official plugins are available:
+For complete documentation including Backend APIs, WebSocket protocol, database models, and architecture diagrams, please refer to the [Root README](../README.md).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## ⚡ Quick Start
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# Install dependencies
+npm install
 
-## Expanding the ESLint configuration
+# Setup environment variables
+cp .env.example .env
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Run development server with Hot Module Replacement
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+---
+
+## 🛠️ Frontend Technologies
+
+- **React 19** & **Vite**
+- **Tailwind CSS 3.4** (Cyberpunk/Dark glassmorphic theme)
+- **Zustand 5** (Global state for audio player, live rooms, and persisted authentication)
+- **Howler.js 2.2** (High-fidelity audio playback & seek management)
+- **Socket.io Client** (Synchronized playback & real-time chat)
+- **React Router DOM v7** (Client-side routing & route guards)
+- **Lucide React** (Modern UI icons)
+- **React Hot Toast** (Alerts & notifications)
+- **Better-Auth React Client** (Social and session authentication)
+
+---
+
+## 🌐 Environment Variables
+
+| Variable | Description | Example |
+| :--- | :--- | :--- |
+| `VITE_API_BASE_URL` | Express REST API Base URL | `http://localhost:7000/api/v1` |
+| `VITE_AUTH_BASE_URL` | Better-Auth Base URL | `http://localhost:7000` |
+| `VITE_SOCKET_URL` | Socket.io Server URL | `http://localhost:7000` |

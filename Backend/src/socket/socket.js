@@ -149,13 +149,9 @@ const initializeSocket = (io) => {
 
                 resolvedName = resolvedName || 'SyncTune User';
 
-                const senderObjectId = ObjectId.isValid(userId) ? new ObjectId(userId) : userId;
-                const roomObjectId = ObjectId.isValid(roomId) ? new ObjectId(roomId) : roomId;
-
                 const newMsg = await Message.create({
-                    room: roomObjectId,
-                    sender: senderObjectId,
-                    senderName: resolvedName,
+                    room: roomId,
+                    sender: userId,
                     message: String(message).trim(),
                 }).catch((err) => {
                     console.error("Error saving message in socket:", err);

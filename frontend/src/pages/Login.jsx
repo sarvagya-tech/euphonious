@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Waves, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -8,6 +8,18 @@ const Login = () => {
   const location = useLocation();
   const [googleLoading, setGoogleLoading] = useState(false);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const error = params.get('error');
+    if (error) {
+      if (error === 'state_mismatch') {
+        toast.error('Authentication session expired or blocked. Please try again.');
+      } else {
+        toast.error(`Sign in error: ${error.replace(/_/g, ' ')}`);
+      }
+    }
+  }, [location.search]);
+
   const handleGoogleSignIn = async () => {
     try {
       setGoogleLoading(true);
@@ -15,6 +27,7 @@ const Login = () => {
       await authClient.signIn.social({
         provider: 'google',
         callbackURL: `${window.location.origin}${origin}`,
+        errorCallbackURL: `${window.location.origin}/login?error=auth_failed`,
       });
     } catch (error) {
       console.error(error);

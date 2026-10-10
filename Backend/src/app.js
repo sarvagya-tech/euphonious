@@ -11,7 +11,7 @@ import playlistRouter from './routes/playlist.routes.js'
 const app = express()
 app.set('trust proxy', 1)
 
-const configuredOrigins = (process.env.CLIENT_URLS || 'http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://localhost:3000')
+const configuredOrigins = (process.env.CLIENT_URLS || 'http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://localhost:3000,https://euphonious-sage.vercel.app,https://synctune.vercel.app')
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean)
@@ -52,9 +52,15 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }))
 
 // Health check endpoints for Render and ping monitors
 app.get('/', (req, res) => {
+    if (req.query.error) {
+        const frontendUrl = (process.env.FRONTEND_URL || "https://euphonious-sage.vercel.app").replace(/\/+$/, "");
+        return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent(req.query.error)}`);
+    }
+
     res.status(200).json({
         success: true,
         message: "SyncTune API is live and operational",
+        frontend: process.env.FRONTEND_URL || "https://euphonious-sage.vercel.app",
         timestamp: new Date().toISOString()
     })
 })

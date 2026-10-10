@@ -29,4 +29,9 @@ const getCurrentRoom = async (roomId) => {
     return currentRoom.data;
 };
 
-export { createRoom, joinRoom, leaveRoomService, deleteRoomService, getCurrentRoom };
+const getRoomMessages = async (roomId) => {
+    const response = await api.get(`/chatRoom/${roomId}/messages`);
+    return response.data;
+};
+
+export { createRoom, joinRoom, leaveRoomService, deleteRoomService, getCurrentRoom, getRoomMessages };

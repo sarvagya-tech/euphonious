@@ -10,6 +10,8 @@ const socket = io(rawSocketUrl, {
     transports: ['websocket', 'polling'],
 });
 
+let currentJoinData = null;
+
 export const connectSocket = () => {
     if (!socket.connected) {
         socket.connect();
@@ -23,12 +25,23 @@ export const disconnectSocket = () => {
 };
 
 export const joinRoom = (roomId, userId, code, userName) => {
-    socket.emit("joinRoom", { roomId, userId, code, userName });
+    currentJoinData = { roomId, userId, code, userName };
+    if (!socket.connected) {
+        socket.connect();
+    }
+    socket.emit("joinRoom", currentJoinData);
 };
 
 export const leaveRoom = () => {
+    currentJoinData = null;
     socket.emit("leaveRoom");
 };
+
+socket.on("connect", () => {
+    if (currentJoinData && currentJoinData.roomId && currentJoinData.userId) {
+        socket.emit("joinRoom", currentJoinData);
+    }
+});
 
 export const sendMessage = (roomId, userId, message, senderName) => {
     socket.emit("sendMessage", { roomId, userId, message, senderName });

@@ -1,10 +1,13 @@
 import { ApiError } from "../utils/apiError.js";
 import { asynchandler } from "../utils/asynchandler.js";
-import User from "../model/user.model.js"
+import User from "../model/user.model.js";
 import Room from "../model/chatRoom.model.js";
+import Message from "../model/message.model.js";
+import { client } from "../db/mongoClient.js";
+import { ObjectId } from "mongodb";
 import { ApiResponse } from "../utils/apiResponse.js";
 import Song from "../model/song.model.js";
-import {v4 as uuidv4} from 'uuid'
+import {v4 as uuidv4} from 'uuid';
 
 /*
 - tkae name description from body 
@@ -215,4 +218,56 @@ if(room.hostedBy.toString() === userId.toString()){
         new ApiResponse(200, roomData, "room data fetched")
     )
 })
-export{createchatRoom,joiningRoom,leaveRoom,deleteRoom,getcurrentRoom};
+
+const getRoomMessages = asynchandler(async(req, res) => {
+    const { roomId } = req.params;
+    if (!roomId) {
+        throw new ApiError(400, "roomId is required");
+    }
+
+    const queryRoomId = ObjectId.isValid(roomId) ? new ObjectId(roomId) : roomId;
+    const rawHistory = await Message.find({
+        $or: [{ room: queryRoomId }, { room: roomId }]
+    })
+    .sort({ createdAt: 1 })
+    .limit(50)
+    .lean();
+
+    const senderIds = [...new Set(rawHistory.map(m => m.sender?.toString()).filter(Boolean))];
+    const usersMap = {};
+
+    for (const sId of senderIds) {
+        try {
+            const isObjId = ObjectId.isValid(sId);
+            const q = isObjId ? { _id: new ObjectId(sId) } : { _id: sId };
+            const mUser = await User.findById(sId).select('fullname').lean().catch(() => null);
+            if (mUser?.fullname) {
+                usersMap[sId] = mUser.fullname;
+                continue;
+            }
+            const bUser = await client.db().collection('user').findOne(q).catch(() => null);
+            if (bUser?.name || bUser?.fullname) {
+                usersMap[sId] = bUser.name || bUser.fullname;
+                continue;
+            }
+        } catch (e) {}
+        usersMap[sId] = 'SyncTune User';
+    }
+
+    const messages = rawHistory.map(m => {
+        const sId = m.sender?.toString();
+        return {
+            _id: m._id.toString(),
+            userId: sId,
+            senderName: m.senderName || usersMap[sId] || 'SyncTune User',
+            message: m.message,
+            createdAt: m.createdAt,
+        };
+    });
+
+    res.status(200).json(
+        new ApiResponse(200, messages, "room messages retrieved")
+    );
+});
+
+export { createchatRoom, joiningRoom, leaveRoom, deleteRoom, getcurrentRoom, getRoomMessages };

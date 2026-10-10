@@ -106,7 +106,7 @@ const ChatBox = () => {
         ) : (
           messages.map((msg, i) => (
             <div 
-              key={i} 
+              key={msg.id || i} 
               className={`flex items-start gap-2.5 ${msg.isMe ? 'flex-row-reverse' : 'flex-row'} animate-fade-in`}
             >
               {/* User Avatar Circle */}

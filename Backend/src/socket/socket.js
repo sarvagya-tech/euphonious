@@ -12,44 +12,96 @@ const initializeSocket = (io) => {
         console.log("User connected:", socket.id);
 
 
-        // JOIN ROOM (requires valid access code unless user is the host)
+        // JOIN ROOM (authenticates and connects to room, sends message history)
 
         socket.on("joinRoom", async (data) => {
-            const { roomId, userId, code } = data;
+            const { roomId, userId, code } = data || {};
 
             if (!roomId || !userId) {
                 return socket.emit("joinError", { message: "Room id and user id are required" });
             }
 
             try {
-                const room = await Room.findById(roomId).select("code isroomActive hostedBy");
+                const room = await Room.findById(roomId).select("code isroomActive hostedBy members");
                 if (!room || !room.isroomActive) {
                     return socket.emit("joinError", { message: "Room not found or inactive" });
                 }
 
-                const normalized = code != null ? String(code) : "";
-                const isHost =
-                    room.hostedBy && String(room.hostedBy) === String(userId);
+                const normalized = code != null ? String(code).trim().toUpperCase() : "";
+                const roomCode = room.code ? String(room.code).trim().toUpperCase() : "";
+                const isHost = room.hostedBy && String(room.hostedBy?._id || room.hostedBy) === String(userId);
+                const isMember = Array.isArray(room.members) && room.members.some(m => String(m?._id || m) === String(userId));
 
-                if (isHost) {
-                    if (normalized && normalized !== room.code) {
-                        return socket.emit("joinError", { message: "Invalid access code" });
-                    }
-                } else {
-                    if (!normalized || normalized !== room.code) {
-                        console.log(normalized, room.code);
-                        return socket.emit("joinError", { message: "Invalid access code" });
-                    }
+                // If code was explicitly provided and differs from room code, AND user is neither host nor existing member
+                if (normalized && roomCode && normalized !== roomCode && !isHost && !isMember) {
+                    return socket.emit("joinError", { message: "Invalid access code" });
                 }
 
-                const clientUserName = data.userName || data.senderName;
+                const clientUserName = data.userName || data.senderName || "SyncTune User";
                 socket.join(roomId);
                 users.set(socket.id, { userId, roomId, userName: clientUserName });
 
+                // Ensure user is in members array in DB if not host
+                if (!isHost && !isMember) {
+                    const memberIdToPush = ObjectId.isValid(userId) ? new ObjectId(userId) : userId;
+                    await Room.findByIdAndUpdate(roomId, {
+                        $addToSet: { members: memberIdToPush }
+                    }).catch(() => null);
+                }
+
+                // 1. Send recent message history to this joining socket
+                try {
+                    const queryRoomId = ObjectId.isValid(roomId) ? new ObjectId(roomId) : roomId;
+                    const rawHistory = await Message.find({
+                        $or: [{ room: queryRoomId }, { room: roomId }]
+                    })
+                    .sort({ createdAt: 1 })
+                    .limit(50)
+                    .lean();
+
+                    const senderIds = [...new Set(rawHistory.map(m => m.sender?.toString()).filter(Boolean))];
+                    const usersMap = {};
+
+                    for (const sId of senderIds) {
+                        try {
+                            const isObjId = ObjectId.isValid(sId);
+                            const q = isObjId ? { _id: new ObjectId(sId) } : { _id: sId };
+                            const mUser = await User.findById(sId).select('fullname').lean().catch(() => null);
+                            if (mUser?.fullname) {
+                                usersMap[sId] = mUser.fullname;
+                                continue;
+                            }
+                            const bUser = await client.db().collection('user').findOne(q).catch(() => null);
+                            if (bUser?.name || bUser?.fullname) {
+                                usersMap[sId] = bUser.name || bUser.fullname;
+                                continue;
+                            }
+                        } catch (e) {}
+                        usersMap[sId] = 'SyncTune User';
+                    }
+
+                    const messageHistory = rawHistory.map(m => {
+                        const sId = m.sender?.toString();
+                        return {
+                            _id: m._id.toString(),
+                            userId: sId,
+                            senderName: m.senderName || usersMap[sId] || 'SyncTune User',
+                            message: m.message,
+                            createdAt: m.createdAt,
+                            time: m.createdAt ? new Date(m.createdAt).getTime() : Date.now(),
+                        };
+                    });
+
+                    socket.emit("messageHistory", messageHistory);
+                } catch (histErr) {
+                    console.error("Error fetching message history in socket:", histErr);
+                }
+
+                // 2. Broadcast userJoined to the room
                 io.to(roomId).emit("userJoined", {
                     userId,
-                    userName: clientUserName || "User",
-                    message: `${clientUserName || "User"} joined the room`,
+                    userName: clientUserName,
+                    message: `${clientUserName} joined the room`,
                 });
             } catch (err) {
                 console.error("joinRoom socket error:", err);
@@ -61,9 +113,14 @@ const initializeSocket = (io) => {
         // SEND MESSAGE
 
         socket.on("sendMessage", async (data) => {
-            const { roomId, userId, message, senderName, userName } = data;
+            const { roomId, userId, message, senderName, userName } = data || {};
 
             if (!roomId || !userId || !message) return;
+
+            // Make sure the sending socket is inside the room
+            if (!socket.rooms.has(roomId)) {
+                socket.join(roomId);
+            }
 
             try {
                 let resolvedName = senderName || userName || users.get(socket.id)?.userName;
@@ -92,17 +149,26 @@ const initializeSocket = (io) => {
 
                 resolvedName = resolvedName || 'SyncTune User';
 
-                await Message.create({
-                    room: roomId,
-                    sender: userId,
-                    message,
-                }).catch(() => null);
+                const senderObjectId = ObjectId.isValid(userId) ? new ObjectId(userId) : userId;
+                const roomObjectId = ObjectId.isValid(roomId) ? new ObjectId(roomId) : roomId;
+
+                const newMsg = await Message.create({
+                    room: roomObjectId,
+                    sender: senderObjectId,
+                    senderName: resolvedName,
+                    message: String(message).trim(),
+                }).catch((err) => {
+                    console.error("Error saving message in socket:", err);
+                    return null;
+                });
 
                 io.to(roomId).emit("newMessage", {
-                    userId,
+                    _id: newMsg?._id?.toString() || String(Date.now()),
+                    userId: String(userId),
                     senderName: resolvedName,
-                    message,
+                    message: String(message).trim(),
                     time: Date.now(),
+                    createdAt: new Date(),
                 });
 
             } catch (err) {

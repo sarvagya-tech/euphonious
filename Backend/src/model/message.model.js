@@ -2,12 +2,16 @@ import mongoose from "mongoose";
 
 const messageSchema = mongoose.Schema({
     room:{
-        type : mongoose.Schema.Types.ObjectId,
+        type : mongoose.Schema.Types.Mixed,
         ref : "Room"
     },
     sender:{
-        type : mongoose.Schema.Types.ObjectId,
+        type : mongoose.Schema.Types.Mixed,
         ref : "User"
+    },
+    senderName: {
+        type : String,
+        trim : true
     },
     message:{  
         type : String,

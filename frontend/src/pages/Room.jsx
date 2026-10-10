@@ -28,7 +28,7 @@ import useRoomStore from '../store/roomStore.js';
 import socket, { connectSocket, disconnectSocket, joinRoom, leaveRoom, syncPause, syncPlay, syncSkip } from '../socket/socket.js';
 import useAuthStore from '../store/authStore.js';
 
-import { getCurrentRoom } from '../services/room.service.js';
+import { getCurrentRoom, getRoomMessages } from '../services/room.service.js';
 import { getallSongs } from '../services/song.service.js';
 import usePlayerStore from '../store/playerStore.js';
 import usePlayer from '../hooks/usePlayer.js';
@@ -36,7 +36,7 @@ import usePlayer from '../hooks/usePlayer.js';
 const Room = () => {
   const { id: roomId } = useParams();
   const { user } = useAuthStore();
-  const { currentRoom, addMessage, setRoom, setMembers, members } = useRoomStore();
+  const { currentRoom, addMessage, setMessages, setRoom, setMembers, members } = useRoomStore();
   const { setQueue, queue } = usePlayerStore();
    
   const { currentTrack, isPlaying, progress, setSong, setIsPlaying } = usePlayerStore();
@@ -110,7 +110,10 @@ const Room = () => {
   };
 
   useEffect(() => {
-    const code = sessionStorage.getItem(`roomJoin:${roomId}`);
+    let savedCode = sessionStorage.getItem(`roomJoin:${roomId}`);
+    const currentRoomId = roomId;
+    const currentUserId = user?._id || user?.id;
+    const currentUserName = user?.fullname || user?.name || 'SyncTune User';
 
     const fetchCurrentRoom = async () => {
       try {
@@ -118,34 +121,102 @@ const Room = () => {
         if (roomData?.data) {
           setRoom(roomData.data);
           setMembers(roomData.data?.members ?? []);
+          if (roomData.data.code && !savedCode) {
+            savedCode = roomData.data.code;
+            sessionStorage.setItem(`roomJoin:${roomId}`, savedCode);
+            if (currentUserId) {
+              joinRoom(currentRoomId, currentUserId, savedCode, currentUserName);
+            }
+          }
         }
       } catch (err) {
         console.log('Error fetching room:', err);
       }
     };
 
+    const fetchHistory = async () => {
+      try {
+        const res = await getRoomMessages(roomId);
+        const historyList = res?.data;
+        if (Array.isArray(historyList) && historyList.length > 0) {
+          const formatted = historyList.map((msg) => {
+            const isMe = Boolean(currentUserId && String(msg.userId) === String(currentUserId));
+            const msgDate = msg.createdAt ? new Date(msg.createdAt) : new Date();
+            return {
+              id: msg._id,
+              user: isMe ? (currentUserName || "You") : (msg.senderName || "User"),
+              message: msg.message,
+              isMe: isMe,
+              time: msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            };
+          });
+          setMessages(formatted);
+        }
+      } catch (err) {
+        console.log('Error fetching history:', err);
+      }
+    };
+
     fetchCurrentRoom();
+    fetchHistory();
     connectSocket();
-    const currentRoomId = roomId;
-    const currentUserId = user?._id || user?.id;
-    const currentUserName = user?.fullname || user?.name || 'SyncTune User';
-    joinRoom(currentRoomId, currentUserId, code, currentUserName);
+
+    if (currentUserId) {
+      joinRoom(currentRoomId, currentUserId, savedCode, currentUserName);
+    }
     
-    socket.on("newMessage", (data) => {
+    const handleMessageHistory = (history) => {
+      if (Array.isArray(history)) {
+        const formatted = history.map((msg) => {
+          const isMe = Boolean(currentUserId && String(msg.userId) === String(currentUserId));
+          const msgDate = msg.createdAt ? new Date(msg.createdAt) : new Date(msg.time || Date.now());
+          return {
+            id: msg._id,
+            user: isMe ? (currentUserName || "You") : (msg.senderName || "User"),
+            message: msg.message,
+            isMe: isMe,
+            time: msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          };
+        });
+        setMessages(formatted);
+      }
+    };
+
+    const handleNewMessage = (data) => {
       const isMe = Boolean(currentUserId && String(data.userId) === String(currentUserId));
+      const msgDate = data.createdAt ? new Date(data.createdAt) : new Date(data.time || Date.now());
       addMessage({
+        id: data._id || data.id,
         user: isMe ? (currentUserName || "You") : (data.senderName || "User"),
         message: data.message,
         isMe: isMe,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        time: msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       });
-    });
+    };
+
+    const handleUserJoined = (data) => {
+      if (data?.userName && data?.userId !== currentUserId) {
+        toast.success(`${data.userName} joined the room`, { id: `joined-${data.userId}`, duration: 2500 });
+      }
+    };
+
+    const handleJoinError = (err) => {
+      console.warn("Socket join notice:", err);
+    };
+
+    socket.on("messageHistory", handleMessageHistory);
+    socket.on("newMessage", handleNewMessage);
+    socket.on("userJoined", handleUserJoined);
+    socket.on("joinError", handleJoinError);
 
     return () => {
       leaveRoom();
-      socket.off("newMessage");
+      socket.off("messageHistory", handleMessageHistory);
+      socket.off("newMessage", handleNewMessage);
+      socket.off("userJoined", handleUserJoined);
+      socket.off("joinError", handleJoinError);
     };
-  }, [roomId, user, addMessage, setMembers, setRoom]);
+  }, [roomId, user, addMessage, setMessages, setMembers, setRoom]);
   
   useEffect(() => {
     fetchSongs();

@@ -20,7 +20,51 @@ function AuthSessionSync() {
   useEffect(() => {
     const syncSession = async () => {
       try {
-        const sessionRes = await authClient.getSession();
+        // 1. Check if OAuth redirect passed auth_token in URL query parameters
+        const searchParams = new URLSearchParams(window.location.search);
+        const urlToken = searchParams.get('auth_token');
+
+        if (urlToken) {
+          // Clean the auth_token query parameter from URL bar
+          searchParams.delete('auth_token');
+          const cleanSearch = searchParams.toString() ? `?${searchParams.toString()}` : '';
+          window.history.replaceState({}, document.title, `${window.location.pathname}${cleanSearch}`);
+
+          const sessionRes = await authClient.getSession({
+            fetchOptions: {
+              headers: {
+                Authorization: `Bearer ${urlToken}`,
+              },
+            },
+          });
+
+          if (sessionRes?.data?.user) {
+            const u = sessionRes.data.user;
+            const normalized = {
+              _id: u.id,
+              id: u.id,
+              fullname: u.name || 'SyncTune User',
+              name: u.name,
+              email: u.email,
+              avatar: u.image || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=400',
+              createdAt: u.createdAt,
+            };
+            setUser(normalized, urlToken);
+            toast.success(`Welcome, ${normalized.fullname}!`);
+            return;
+          }
+        }
+
+        // 2. Otherwise verify existing stored session or cookie
+        const storedToken = useAuthStore.getState().token;
+        const sessionRes = await authClient.getSession({
+          fetchOptions: storedToken ? {
+            headers: {
+              Authorization: `Bearer ${storedToken}`,
+            },
+          } : {},
+        });
+
         if (sessionRes?.data?.user) {
           const u = sessionRes.data.user;
           const normalized = {
@@ -32,7 +76,7 @@ function AuthSessionSync() {
             avatar: u.image || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=400',
             createdAt: u.createdAt,
           };
-          const token = sessionRes.data.session?.token || sessionRes.data.session?.id || 'google_session_active';
+          const token = sessionRes.data.session?.token || storedToken || 'google_session_active';
           setUser(normalized, token);
         }
       } catch (err) {

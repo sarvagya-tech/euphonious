@@ -43,9 +43,38 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
 }))
 
-// Mount Better Auth handler BEFORE body-parsing middleware (Express 5 wildcard syntax)
-app.all("/api/auth/*splat", toNodeHandler(auth))
-app.all("/api/auth", toNodeHandler(auth))
+// Mount Better Auth handler BEFORE body-parsing middleware
+const betterAuthHandler = toNodeHandler(auth)
+
+app.all("/api/auth/*splat", (req, res, next) => {
+    // Intercept OAuth callback redirect to attach session token into redirect URL for cross-domain SPA support
+    if (req.path.includes("/callback")) {
+        const originalWriteHead = res.writeHead;
+        res.writeHead = function(statusCode, ...rest) {
+            if (statusCode >= 300 && statusCode < 400) {
+                let location = res.getHeader('location');
+                const setCookie = res.getHeader('set-cookie');
+                if (location && setCookie) {
+                    const cookiesStr = Array.isArray(setCookie) ? setCookie.join('; ') : String(setCookie);
+                    const match = cookiesStr.match(/(?:better-auth\.)?session_token=([^;]+)/);
+                    if (match && match[1]) {
+                        const tokenValue = match[1];
+                        const rawToken = tokenValue.split('.')[0];
+                        if (rawToken && !location.includes('auth_token=')) {
+                            const separator = location.includes('?') ? '&' : '?';
+                            location = `${location}${separator}auth_token=${encodeURIComponent(rawToken)}`;
+                            res.setHeader('location', location);
+                        }
+                    }
+                }
+            }
+            return originalWriteHead.call(this, statusCode, ...rest);
+        };
+    }
+    return betterAuthHandler(req, res, next);
+})
+
+app.all("/api/auth", betterAuthHandler)
 
 app.use(express.json({ limit: "16kb" }))
 app.use(express.urlencoded({ extended: true, limit: "16kb" }))

@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/api/auth/:path*",
+      "destination": "https://euphonious.onrender.com/api/auth/:path*"
+    },
+    {
+      "source": "/api/v1/:path*",
+      "destination": "https://euphonious.onrender.com/api/v1/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

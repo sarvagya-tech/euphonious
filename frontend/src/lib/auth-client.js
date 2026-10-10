@@ -11,6 +11,20 @@ export const authClient = createAuthClient({
   baseURL: getAuthBaseUrl(),
   fetchOptions: {
     credentials: "include",
+    onRequest: (context) => {
+      try {
+        const stored = localStorage.getItem('auth-storage');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          const token = parsed?.state?.token;
+          if (token && context.headers && !context.headers.get?.('authorization')) {
+            context.headers.set?.('authorization', `Bearer ${token}`);
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    },
   },
 });
 

@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { betterAuth } from "better-auth/minimal";
+import { bearer } from "better-auth/plugins";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { client } from "../db/mongoClient.js";
 
@@ -40,6 +41,7 @@ export const auth = betterAuth({
         storeStateStrategy: "database",
         skipStateCookieCheck: true,
     },
+    plugins: [bearer()],
     advanced: {
         useSecureCookies: Boolean(isProduction),
         defaultCookieAttributes: isProduction ? {

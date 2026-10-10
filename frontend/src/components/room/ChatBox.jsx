@@ -35,7 +35,9 @@ const ChatBox = () => {
   const handleSend = (textToSend) => {
     const message = textToSend || inputText;
     if (!message || !message.trim()) return;
-    sendMessage(roomId, user?._id, message.trim());
+    const currentUserId = user?._id || user?.id;
+    const currentUserName = user?.fullname || user?.name || 'SyncTune User';
+    sendMessage(roomId, currentUserId, message.trim(), currentUserName);
     if (!textToSend) {
       setInputText("");
     }
@@ -122,7 +124,7 @@ const ChatBox = () => {
                   <span className={`text-[10.5px] font-bold tracking-wider ${
                     msg.isMe ? 'text-accent' : 'text-text-muted'
                   }`}>
-                    {msg.isMe ? 'You' : msg.user}
+                    {msg.isMe ? `${msg.user} (You)` : msg.user}
                   </span>
                   <span className="text-[8.5px] font-mono text-text-muted/60">{msg.time}</span>
                 </div>

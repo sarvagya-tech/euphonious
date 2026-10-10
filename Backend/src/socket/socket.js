@@ -1,8 +1,10 @@
 import Message from "../model/message.model.js";
 import Room from "../model/chatRoom.model.js";
 import User from "../model/user.model.js";
+import { client } from "../db/mongoClient.js";
+import { ObjectId } from "mongodb";
 
-const users = new Map(); // socket.id -> { userId, roomId }
+const users = new Map(); // socket.id -> { userId, roomId, userName }
 
 const initializeSocket = (io) => {
 
@@ -40,12 +42,14 @@ const initializeSocket = (io) => {
                     }
                 }
 
+                const clientUserName = data.userName || data.senderName;
                 socket.join(roomId);
-                users.set(socket.id, { userId, roomId });
+                users.set(socket.id, { userId, roomId, userName: clientUserName });
 
                 io.to(roomId).emit("userJoined", {
                     userId,
-                    message: "User joined the room",
+                    userName: clientUserName || "User",
+                    message: `${clientUserName || "User"} joined the room`,
                 });
             } catch (err) {
                 console.error("joinRoom socket error:", err);
@@ -57,20 +61,46 @@ const initializeSocket = (io) => {
         // SEND MESSAGE
 
         socket.on("sendMessage", async (data) => {
-            const { roomId, userId, message } = data;
+            const { roomId, userId, message, senderName, userName } = data;
 
             if (!roomId || !userId || !message) return;
 
             try {
-                 await Message.create({
+                let resolvedName = senderName || userName || users.get(socket.id)?.userName;
+
+                if (!resolvedName) {
+                    // 1. Try finding in Mongoose User model
+                    const mongooseUser = await User.findById(userId).select('fullname').catch(() => null);
+                    if (mongooseUser?.fullname) {
+                        resolvedName = mongooseUser.fullname;
+                    }
+                }
+
+                if (!resolvedName) {
+                    // 2. Try finding in Better Auth MongoDB 'user' collection
+                    try {
+                        const isObjectId = ObjectId.isValid(userId);
+                        const query = isObjectId ? { _id: new ObjectId(userId) } : { _id: userId };
+                        const betterAuthUser = await client.db().collection('user').findOne(query);
+                        if (betterAuthUser?.name || betterAuthUser?.fullname) {
+                            resolvedName = betterAuthUser.name || betterAuthUser.fullname;
+                        }
+                    } catch (dbErr) {
+                        console.error("Better Auth lookup error in socket:", dbErr);
+                    }
+                }
+
+                resolvedName = resolvedName || 'SyncTune User';
+
+                await Message.create({
                     room: roomId,
                     sender: userId,
                     message,
-                });
-                const sender = await User.findById(userId).select('fullname');
+                }).catch(() => null);
+
                 io.to(roomId).emit("newMessage", {
                     userId,
-                    senderName : sender?.fullname ?? 'Unknown',
+                    senderName: resolvedName,
                     message,
                     time: Date.now(),
                 });

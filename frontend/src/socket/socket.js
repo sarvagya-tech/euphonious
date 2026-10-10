@@ -22,16 +22,16 @@ export const disconnectSocket = () => {
     }
 };
 
-export const joinRoom = (roomId, userId, code) => {
-    socket.emit("joinRoom", { roomId, userId, code });
+export const joinRoom = (roomId, userId, code, userName) => {
+    socket.emit("joinRoom", { roomId, userId, code, userName });
 };
 
 export const leaveRoom = () => {
     socket.emit("leaveRoom");
 };
 
-export const sendMessage = (roomId, userId, message) => {
-    socket.emit("sendMessage", { roomId, userId, message });
+export const sendMessage = (roomId, userId, message, senderName) => {
+    socket.emit("sendMessage", { roomId, userId, message, senderName });
 };
 
 export const syncPlay = (roomId, songUrl, position) => {

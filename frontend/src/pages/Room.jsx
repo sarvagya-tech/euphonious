@@ -127,15 +127,17 @@ const Room = () => {
     fetchCurrentRoom();
     connectSocket();
     const currentRoomId = roomId;
-    const currentUserId = user?._id;
-    joinRoom(currentRoomId, currentUserId, code);
+    const currentUserId = user?._id || user?.id;
+    const currentUserName = user?.fullname || user?.name || 'SyncTune User';
+    joinRoom(currentRoomId, currentUserId, code, currentUserName);
     
     socket.on("newMessage", (data) => {
+      const isMe = Boolean(currentUserId && String(data.userId) === String(currentUserId));
       addMessage({
-        user: data.userId === currentUserId ? "Me" : data.senderName,
+        user: isMe ? (currentUserName || "You") : (data.senderName || "User"),
         message: data.message,
-        isMe: data.userId === currentUserId,
-        time: new Date().toLocaleTimeString(),
+        isMe: isMe,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       });
     });
 
